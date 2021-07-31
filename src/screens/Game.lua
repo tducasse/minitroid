@@ -84,8 +84,8 @@ function GameScreen.new()
     camera:attach()
 
     love.graphics.clear(40 / 255, 45 / 255, 52 / 255, 255 / 255)
-    map:draw()
     if not paused then
+      map:draw()
       player:draw()
     end
 
