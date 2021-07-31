@@ -33,7 +33,7 @@ function GameScreen.new()
     music = love.audio.play("assets/music.ogg", "stream", true)
 
     -- MAP
-    map = Tilemapper("assets/boilerplate.ldtk", { aseprite = true })
+    map = Tilemapper("assets/minitroid.ldtk", { aseprite = true })
     world = bump.newWorld()
     map:loadLevel("Level_0", world)
     camera:setBounds(0, 0, map.active.width, map.active.height)

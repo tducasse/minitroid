@@ -113,10 +113,10 @@ function Player:new(p, map_width, map_height)
   self.h = p.h
 
   -- PHYSICS
-  self.speed = 200
+  self.speed = 50
   self.ground = false
-  self.jump_height = -255
-  self.gravity = 500
+  self.jump_height = -60
+  self.gravity = 100
   self.jumping = false
   self.y_velocity = 0
 
