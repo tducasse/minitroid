@@ -1,2 +1,2 @@
-name = love-boilerplate
-itchio = tducasse/test-deploy
+name = minitroid
+itchio = tducasse/minitroid
