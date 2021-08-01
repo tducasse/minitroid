@@ -81,7 +81,7 @@ function GameScreen.new()
     world = {}
     map = {}
     paused = false
-    music = love.audio.play("assets/music.ogg", "stream", true)
+    music = love.audio.play("assets/music.ogg", "static", true)
 
     -- MAP
     map = Tilemapper("assets/minitroid.ldtk", { aseprite = true })
