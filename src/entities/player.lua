@@ -2,10 +2,12 @@ local peachy = require("lib.peachy")
 local Player = Class:extend()
 
 function Player:draw()
-  local x = self.x - self.left
-  local y = self.y - self.top
+  local left = self.left or 0
+  local top = self.top or 0
+  local x = self.x - left
+  local y = self.y - top
   if self.last_dir == -1 then
-    x = x + self.w + self.left * 2
+    x = x + self.w + left * 2
   end
   self.sprite:draw(x, y, 0, self.last_dir)
 end
