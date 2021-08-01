@@ -46,45 +46,64 @@ function Player:update(dt, world)
   local x, y = self.x, self.y
   local x_axis = Input:get("move")
 
-  if x_axis > 0 then
-    x = self.x + (self.speed * dt)
-    if self.ground then
-      self.sprite:setTag("run")
+  if math.abs(self.x_velocity) > 0.1 then
+    if not self.bouncing then
+      self.x_velocity = self.x_velocity - self.last_dir * self.friction
+    else
+      self.x_velocity = self.x_velocity / 2
     end
-    self.last_dir = 1
-  elseif x_axis < 0 then
-    x = self.x - (self.speed * dt)
-    if self.ground then
-      self.sprite:setTag("run")
-    end
-    self.last_dir = -1
   else
-    if self.ground then
-      self.sprite:setTag("idle")
+    if self.bouncing then
+      self.bouncing = false
+      self.jumping = false
+    end
+    self.x_velocity = 0
+  end
+
+  if not self.bouncing then
+    if x_axis > 0 then
+      self.x_velocity = self.speed
+      if self.ground then
+        self.sprite:setTag("run")
+      end
+      self.last_dir = 1
+    elseif x_axis < 0 then
+      self.x_velocity = -self.speed
+      if self.ground then
+        self.sprite:setTag("run")
+      end
+      self.last_dir = -1
+    else
+      if self.ground then
+        self.sprite:setTag("idle")
+      end
+    end
+
+    if Input:down("jump") then
+      if self.ground and not self.jumping then
+        love.audio.play("assets/jump.ogg", "static")
+        self.jumping = true
+        self.y_velocity = self.jump_height
+      end
+    end
+
+    if Input:released("jump") then
+      self.jumping = false
     end
   end
 
-  if Input:down("jump") then
-    if self.ground and not self.jumping then
-      love.audio.play("assets/jump.ogg", "static")
-      self.jumping = true
-      self.y_velocity = self.jump_height
-    end
-  end
-
-  if Input:released("jump") then
-    self.jumping = false
-  end
-
+  x = self.x + self.x_velocity * dt + 0.000001
   y = self.y + self.y_velocity * dt + 0.000001
   self.y_velocity = self.y_velocity + self.gravity * dt
 
   local cols
-  self.x, self.y, cols = self.world:move(self, x, y)
+  self.x, self.y, cols = self.world:move(self, x, y, self.filter)
 
   local ground = false
   for _, col in pairs(cols) do
-    if col.normal.y == 1 then
+    if col.bounce then
+      self:bounce(col.other.type)
+    elseif col.normal.y == 1 then
       self.y_velocity = 0
     elseif col.normal.y == -1 then
       ground = true
@@ -101,11 +120,47 @@ function Player:update(dt, world)
   self:moveOutOfBounds()
 end
 
+function Player:bounce(other)
+  if self.bouncing then
+    return
+  end
+  if other == "crawler" then
+    self:hit(1)
+  end
+  self.bouncing = true
+  self.x_velocity = self.bounciness * -self.last_dir
+end
+
+function Player:hit(hit)
+  self.hp = self.hp - hit
+  if self.hp < 0 then
+    print("dead")
+  end
+end
+
+function Player:filter(other)
+  if other.type and other.type == "crawler" then
+    return "bounce"
+  else
+    return "slide"
+  end
+end
+
 function Player:onLevelLoaded()
   self.world:add(self, self.x, self.y, self.w, self.h)
 end
 
+function Player:display_hp()
+  for i = 1, self.hp do
+    love.graphics.draw(self.heart, (i - 1) * self.heart:getWidth() + i, 59)
+  end
+end
+
 function Player:new(p, map_width, map_height)
+  self.type = "player"
+  self.hp = 5
+  self.heart = love.graphics.newImage("assets/heart.png")
+
   -- POSITION
   self.x = p.x
   self.y = p.y
@@ -116,11 +171,15 @@ function Player:new(p, map_width, map_height)
 
   -- PHYSICS
   self.speed = 50
+  self.friction = 5
   self.ground = false
   self.jump_height = -95
   self.gravity = 150
   self.jumping = false
   self.y_velocity = 0
+  self.x_velocity = 0
+  self.bounciness = 500
+  self.bouncing = false
 
   -- LEVEL BOUNDARIES
   self.east = map_width

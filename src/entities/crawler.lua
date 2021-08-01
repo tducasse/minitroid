@@ -32,16 +32,25 @@ function Crawler:distance_to(target)
              math.pow(self.x - target.x, 2) + math.pow(self.y - target.y, 2))
 end
 
-function Crawler:update(dt)
+function Crawler:update(dt, world)
+  if not self.world and world then
+    self.world = world
+  end
   self.sprite:update(dt)
   self:update_target()
-  self.x = self.x + ((self.target.x - self.x) / self:distance_to(self.target)) *
-               dt * self.speed
-  self.y = self.y + ((self.target.y - self.y) / self:distance_to(self.target)) *
-               dt * self.speed
+  local x =
+      self.x + ((self.target.x - self.x) / self:distance_to(self.target)) * dt *
+          self.speed
+  local y =
+      self.y + ((self.target.y - self.y) / self:distance_to(self.target)) * dt *
+          self.speed
+
+  self.x, self.y = self.world:move(self, x, y)
 end
 
-function Crawler:new(c, grid_size)
+function Crawler:new(c, grid_size, world)
+  self.type = "crawler"
+
   -- POSITION
   self.x = c.x
   self.y = c.y

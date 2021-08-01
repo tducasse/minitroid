@@ -26,20 +26,6 @@ function GameScreen.new()
   local paused = false
   local music = {}
 
-  local function draw_entities()
-    for _, crawler in ipairs(crawlers) do
-      crawler:draw()
-    end
-    player:draw()
-  end
-
-  local function update_entities(dt)
-    for _, crawler in ipairs(crawlers) do
-      crawler:update(dt)
-    end
-    player:update(dt, world)
-  end
-
   local function init_entities()
     -- PLAYER
     player = Player(
@@ -49,9 +35,43 @@ function GameScreen.new()
 
     local grid_size = map.active.Entities.grid_size
     -- CRAWLERS
-    for _, crawler in ipairs(map.active.Entities.Crawler) do
-      crawlers[#crawlers + 1] = Crawler(crawler, grid_size)
+    for _, c in ipairs(map.active.Entities.Crawler or {}) do
+      local crawler = Crawler(c, grid_size)
+      crawlers[#crawlers + 1] = crawler
+      world:add(crawler, crawler.x, crawler.y, crawler.w, crawler.h)
     end
+  end
+
+  local function on_level_loaded_entities()
+    player:onLevelLoaded()
+    local grid_size = map.active.Entities.grid_size
+    -- CRAWLERS
+    for _, c in ipairs(map.active.Entities.Crawler or {}) do
+      local crawler = Crawler(c, grid_size)
+      crawlers[#crawlers + 1] = crawler
+      world:add(crawler, crawler.x, crawler.y, crawler.w, crawler.h)
+    end
+  end
+
+  local function on_level_loading_entities()
+    for _, crawler in ipairs(crawlers) do
+      world:remove(crawler)
+    end
+    crawlers = {}
+  end
+
+  local function update_entities(dt)
+    for _, crawler in ipairs(crawlers) do
+      crawler:update(dt, world)
+    end
+    player:update(dt, world)
+  end
+
+  local function draw_entities()
+    for _, crawler in ipairs(crawlers) do
+      crawler:draw()
+    end
+    player:draw()
   end
 
   -- GAME
@@ -74,6 +94,7 @@ function GameScreen.new()
     Signal.register(
         SIGNALS.NEXT_LEVEL, function(params)
           paused = true
+          on_level_loading_entities()
           camera:fade(
               0.1, { 0, 0, 0, 1 }, function()
                 map:nextLevel(
@@ -87,7 +108,7 @@ function GameScreen.new()
           camera:fade(
               0.1, { 0, 0, 0, 0 }, function()
                 paused = false
-                player:onLevelLoaded()
+                on_level_loaded_entities()
               end)
         end)
   end
@@ -122,9 +143,11 @@ function GameScreen.new()
     --   local item = items[i]
     --   love.graphics.rectangle("line", item.x, item.y, item.w, item.h)
     -- end
-
     camera:detach()
     camera:draw()
+    if not paused then
+      player:display_hp()
+    end
     push:finish()
   end
 
