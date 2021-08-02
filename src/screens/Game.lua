@@ -23,7 +23,8 @@ function GameScreen.new()
   local crawlers = {}
   local world = {}
   local map = {}
-  local paused = false
+  local paused = true
+  local started = false
   local music = {}
 
   local function init_entities()
@@ -80,11 +81,14 @@ function GameScreen.new()
     crawlers = {}
     world = {}
     map = {}
-    paused = false
+    paused = true
+    started = false
     -- music = love.audio.play("assets/music.ogg", "static", true)
 
     -- MAP
-    map = Tilemapper("assets/minitroid.ldtk", { aseprite = true })
+    map = Tilemapper(
+              "assets/minitroid.ldtk",
+              { aseprite = true, collisions = { [1] = true } })
     world = bump.newWorld()
     map:loadLevel("Level_0", world)
     camera:setBounds(0, 0, map.active.width, map.active.height)
@@ -115,6 +119,10 @@ function GameScreen.new()
 
   function self:update(dt)
     Input:update()
+    if not started and Input:pressed("jump") then
+      paused = false
+      started = true
+    end
     -- if Input:pressed("cancel") then
     -- love.audio.stop(music)
     -- ScreenManager.switch("splash")
@@ -132,7 +140,7 @@ function GameScreen.new()
     push:start()
     camera:attach()
 
-    love.graphics.clear(40 / 255, 45 / 255, 52 / 255, 255 / 255)
+    love.graphics.clear(24 / 255, 20 / 255, 37 / 255, 255 / 255)
     if not paused then
       draw_entities()
       map:draw()
@@ -152,6 +160,5 @@ function GameScreen.new()
   end
 
   return self
-
 end
 return GameScreen
