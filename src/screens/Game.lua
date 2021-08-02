@@ -81,7 +81,7 @@ function GameScreen.new()
     world = {}
     map = {}
     paused = false
-    music = love.audio.play("assets/music.ogg", "static", true)
+    -- music = love.audio.play("assets/music.ogg", "static", true)
 
     -- MAP
     map = Tilemapper("assets/minitroid.ldtk", { aseprite = true })
@@ -115,11 +115,11 @@ function GameScreen.new()
 
   function self:update(dt)
     Input:update()
-    if Input:pressed("cancel") then
-      -- love.audio.stop(music)
-      -- ScreenManager.switch("splash")
-      love.event.quit()
-    end
+    -- if Input:pressed("cancel") then
+    -- love.audio.stop(music)
+    -- ScreenManager.switch("splash")
+    -- love.event.quit()
+    -- end
     love.audio.update()
     if not paused then
       update_entities(dt)

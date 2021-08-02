@@ -30,6 +30,7 @@ function love.load()
   love.graphics.setLineStyle("rough")
   push:setupScreen(
       RES_X, RES_Y, WIN_X, WIN_Y, {
+        canvas = false,
         fullscreen = false,
         resizable = true,
         vsync = true,
