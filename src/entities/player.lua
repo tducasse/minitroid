@@ -29,11 +29,28 @@ function Player:moveOutOfBounds()
     y = self.south - self.h - self.h / 3
   end
   if dir then
+    self:stop_rolling()
     Signal.emit(SIGNALS.NEXT_LEVEL, dir)
     self.world:remove(self)
     self.x = x
     self.y = y
   end
+end
+
+function Player:start_rolling()
+  self.rolling = true
+  self.x = self.x - self.rolling_x
+  self.world:update(
+      self, self.x + self.rolling_x, self.y + self.rolling_y, self.rolling_w,
+      self.rolling_h)
+  self.sprite:setTag("ball")
+end
+
+function Player:stop_rolling()
+  self.rolling = false
+  self.x = self.x + self.rolling_x
+  self.world:update(self, self.x, self.y, self.w, self.h)
+  self.sprite:setTag("idle")
 end
 
 function Player:update(dt, world)
@@ -66,26 +83,47 @@ function Player:update(dt, world)
     self.x_velocity = 0
   end
 
+  if self.ground then
+    if Input:pressed("down") and self.roll then
+      self:start_rolling()
+    end
+  end
+  if Input:pressed("up") and self.rolling then
+    self:stop_rolling()
+  end
+
   if not self.bouncing then
     if x_axis > 0 then
       self.x_velocity = self.speed
       if self.ground then
-        self.sprite:setTag("run")
+        if self.rolling then
+          self.sprite:setTag("rolling")
+        else
+          self.sprite:setTag("run")
+        end
       end
       self.last_dir = 1
     elseif x_axis < 0 then
       self.x_velocity = -self.speed
       if self.ground then
-        self.sprite:setTag("run")
+        if self.rolling then
+          self.sprite:setTag("rolling")
+        else
+          self.sprite:setTag("run")
+        end
       end
       self.last_dir = -1
     else
       if self.ground then
-        self.sprite:setTag("idle")
+        if self.rolling then
+          self.sprite:setTag("ball")
+        else
+          self.sprite:setTag("idle")
+        end
       end
     end
 
-    if Input:down("jump") then
+    if Input:down("jump") and not self.rolling then
       if self.ground and not self.jumping then
         love.audio.play("assets/jump.ogg", "static", nil, 0.7)
         self.jumping = true
@@ -97,7 +135,7 @@ function Player:update(dt, world)
       self.jumping = false
     end
 
-    if Input:down("shoot") then
+    if Input:down("shoot") and not self.rolling then
       if not self.shooting then
         love.audio.play("assets/shoot.ogg", "static", nil, 0.3)
         self.sprite:setTag("shoot")
@@ -114,11 +152,21 @@ function Player:update(dt, world)
   self.y_velocity = self.y_velocity + self.gravity * dt
 
   local cols
-  self.x, self.y, cols = self.world:move(self, x, y, self.filter)
+  if self.rolling then
+    local newX, newY = 0, 0
+    newX, newY, cols = self.world:move(
+                           self, x + self.rolling_x, y + self.rolling_y,
+                           self.filter)
+    self.x, self.y = newX - self.rolling_x, newY - self.rolling_y
+  else
+    self.x, self.y, cols = self.world:move(self, x, y, self.filter)
+  end
 
   local ground = false
   for _, col in pairs(cols) do
-    if col.bounce then
+    if col.type == "cross" then
+      self:cross(col.other)
+    elseif col.type == "bounce" then
       self:bounce(col.other.type)
     elseif col.normal.y == 1 then
       self.y_velocity = 0
@@ -130,7 +178,7 @@ function Player:update(dt, world)
 
   self.ground = ground
 
-  if not self.ground then
+  if not self.ground and not self.rolling then
     self.sprite:setTag("jump")
   end
 
@@ -152,6 +200,15 @@ function Player:bounce(other)
   self.x_velocity = self.bounciness * -self.last_dir
 end
 
+function Player:cross(other)
+  if other.type == "item" then
+    if other.item == "ball" then
+      other:destroy()
+      self.roll = true
+    end
+  end
+end
+
 function Player:hit(hit)
   love.audio.play("assets/hurt.ogg", "static", nil, 0.7)
   self.hp = self.hp - hit
@@ -166,6 +223,8 @@ function Player:filter(other)
       return "bounce"
     elseif other.type == "bullet" then
       return nil
+    elseif other.type == "item" then
+      return "cross"
     end
   else
     return "slide"
@@ -194,6 +253,10 @@ function Player:new(p, map_width, map_height)
   self.left = p.left
   self.w = p.w
   self.h = p.h
+  self.rolling_h = p.rolling_h
+  self.rolling_w = p.rolling_w
+  self.rolling_x = p.rolling_x
+  self.rolling_y = p.rolling_y
 
   -- SHOOTING
   self.shooting = false
