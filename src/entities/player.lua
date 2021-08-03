@@ -46,6 +46,12 @@ function Player:update(dt, world)
   local x, y = self.x, self.y
   local x_axis = Input:get("move")
 
+  local still_shooting = self.shooting and
+                             (love.timer.getTime() - self.shooting < 0.2)
+  if not still_shooting and self.shooting then
+    self.shooting = false
+  end
+
   if math.abs(self.x_velocity) > 0.1 then
     if not self.bouncing then
       self.x_velocity = self.x_velocity - self.last_dir * self.friction
@@ -81,7 +87,7 @@ function Player:update(dt, world)
 
     if Input:down("jump") then
       if self.ground and not self.jumping then
-        love.audio.play("assets/jump.ogg", "static")
+        love.audio.play("assets/jump.ogg", "static", nil, 0.7)
         self.jumping = true
         self.y_velocity = self.jump_height
       end
@@ -89,6 +95,17 @@ function Player:update(dt, world)
 
     if Input:released("jump") then
       self.jumping = false
+    end
+
+    if Input:down("shoot") then
+      if not self.shooting then
+        love.audio.play("assets/shoot.ogg", "static", nil, 0.3)
+        self.sprite:setTag("shoot")
+        self.shooting = love.timer.getTime()
+        Signal.emit(
+            SIGNALS.SHOOT, self.x + (self.last_dir > 0 and self.w or 0),
+            self.y + self.gun_height, self.last_dir, 0)
+      end
     end
   end
 
@@ -117,6 +134,10 @@ function Player:update(dt, world)
     self.sprite:setTag("jump")
   end
 
+  if still_shooting then
+    self.sprite:setTag("shoot")
+  end
+
   self:moveOutOfBounds()
 end
 
@@ -132,6 +153,7 @@ function Player:bounce(other)
 end
 
 function Player:hit(hit)
+  love.audio.play("assets/hurt.ogg", "static", nil, 0.7)
   self.hp = self.hp - hit
   if self.hp < 0 then
     print("dead")
@@ -139,8 +161,12 @@ function Player:hit(hit)
 end
 
 function Player:filter(other)
-  if other.type and other.type == "crawler" then
-    return "bounce"
+  if other.type then
+    if other.type == "crawler" then
+      return "bounce"
+    elseif other.type == "bullet" then
+      return nil
+    end
   else
     return "slide"
   end
@@ -168,6 +194,10 @@ function Player:new(p, map_width, map_height)
   self.left = p.left
   self.w = p.w
   self.h = p.h
+
+  -- SHOOTING
+  self.shooting = false
+  self.gun_height = self.h - 5
 
   -- PHYSICS
   self.speed = 50

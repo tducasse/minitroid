@@ -5,8 +5,8 @@ require("src.globals")
 require("lib.audio")
 
 local inspect = require("lib.inspect")
-Inspect = function(a)
-  print(inspect(a))
+Inspect = function(a, options)
+  print(inspect(a, options))
 end
 Class = require("lib.classic")
 Signal = require("lib.signal")
@@ -19,7 +19,8 @@ function love.load()
       right = { "key:right", "key:d" },
       up = { "key:up", "key:w" },
       down = { "key:down", "key:s" },
-      jump = { "key:space", "key:x" },
+      jump = { "key:space", "key:z" },
+      shoot = { "key:j", "key:x" },
       cancel = { "key:escape" },
     },
     pairs = { move = { "left", "right", "up", "down" } },

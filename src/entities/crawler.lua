@@ -45,11 +45,16 @@ function Crawler:update(dt, world)
       self.y + ((self.target.y - self.y) / self:distance_to(self.target)) * dt *
           self.speed
 
-  self.x, self.y = self.world:move(self, x, y)
+  self.x, self.y = self.world:move(self, x, y, self.filter)
 end
 
-function Crawler:new(c, grid_size, world)
+function Crawler:filter()
+  return nil
+end
+
+function Crawler:new(c, grid_size, collection)
   self.type = "crawler"
+  self.collection = collection
 
   -- POSITION
   self.x = c.x
@@ -74,6 +79,14 @@ function Crawler:new(c, grid_size, world)
                     "assets/crawler.json",
                     love.graphics.newImage("assets/crawler.png"), "walk")
   self.sprite:play()
+end
+
+function Crawler:hit()
+  self:destroy()
+end
+
+function Crawler:destroy()
+  Signal.emit(SIGNALS.DESTROY_ITEM, self, self.collection)
 end
 
 return Crawler

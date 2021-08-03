@@ -1,4 +1,8 @@
--- tilemapper v0.0.2
+-- tilemapper v0.0.3
+-- Depends on:
+--  - json.lua (https://github.com/rxi/json.lua)
+--  - classic.lua (https://github.com/rxi/classic)
+--  - bump.lua (https://github.com/kikito/bump.lua)
 local json = require("lib.json")
 
 local Tilemapper = Class:extend()

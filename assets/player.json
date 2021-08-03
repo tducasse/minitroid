@@ -115,6 +115,15 @@
     "spriteSourceSize": { "x": 0, "y": 0, "w": 8, "h": 11 },
     "sourceSize": { "w": 8, "h": 11 },
     "duration": 350
+   },
+   {
+    "filename": "player 13.aseprite",
+    "frame": { "x": 104, "y": 0, "w": 8, "h": 11 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 8, "h": 11 },
+    "sourceSize": { "w": 8, "h": 11 },
+    "duration": 350
    }
  ],
  "meta": {
@@ -122,12 +131,13 @@
   "version": "1.x-dev",
   "image": "player.png",
   "format": "RGBA8888",
-  "size": { "w": 104, "h": 11 },
+  "size": { "w": 112, "h": 11 },
   "scale": "1",
   "frameTags": [
    { "name": "run", "from": 0, "to": 3, "direction": "forward" },
    { "name": "jump", "from": 4, "to": 5, "direction": "forward" },
-   { "name": "idle", "from": 6, "to": 12, "direction": "forward" }
+   { "name": "idle", "from": 6, "to": 12, "direction": "forward" },
+   { "name": "shoot", "from": 13, "to": 13, "direction": "forward" }
   ],
   "layers": [
    { "name": "Layer 1", "opacity": 255, "blendMode": "normal" }

@@ -13,6 +13,7 @@ function GameScreen.new()
 
   local Player = require("src.entities.player")
   local Crawler = require("src.entities.crawler")
+  local Bullet = require("src.entities.bullet")
 
   -- CAMERA
   local camera = Camera(RES_X / 2, RES_Y / 2, RES_X, RES_Y)
@@ -20,57 +21,74 @@ function GameScreen.new()
 
   -- VARS
   local player = {}
-  local crawlers = {}
   local world = {}
   local map = {}
   local paused = true
   local started = false
   local music = {}
+  local entities = { bullets = {}, crawlers = {} }
 
-  local function init_entities()
-    -- PLAYER
+  local function add_crawlers()
+    local grid_size = map.active.Entities.grid_size
+    for _, c in ipairs(map.active.Entities.Crawler or {}) do
+      local crawler = Crawler(c, grid_size, "crawlers")
+      entities.crawlers[#entities.crawlers + 1] = crawler
+      world:add(crawler, crawler.x, crawler.y, crawler.w, crawler.h)
+    end
+  end
+
+  local function add_player()
     player = Player(
                  map.active.Entities.Player[1], map.active.width,
                  map.active.height)
     world:add(player, player.x, player.y, player.w, player.h)
+  end
 
-    local grid_size = map.active.Entities.grid_size
-    -- CRAWLERS
-    for _, c in ipairs(map.active.Entities.Crawler or {}) do
-      local crawler = Crawler(c, grid_size)
-      crawlers[#crawlers + 1] = crawler
-      world:add(crawler, crawler.x, crawler.y, crawler.w, crawler.h)
+  local function init_entities()
+    add_player()
+    add_crawlers()
+  end
+
+  local function remove_crawlers()
+    for _, crawler in ipairs(entities.crawlers) do
+      world:remove(crawler)
     end
+    entities.crawlers = {}
+  end
+
+  local function remove_bullets()
+    for _, bullet in ipairs(entities.bullets) do
+      world:remove(bullet)
+    end
+    entities.bullets = {}
+  end
+
+  local function on_level_loading_entities()
+    remove_bullets()
+    remove_crawlers()
   end
 
   local function on_level_loaded_entities()
     player:onLevelLoaded()
-    local grid_size = map.active.Entities.grid_size
-    -- CRAWLERS
-    for _, c in ipairs(map.active.Entities.Crawler or {}) do
-      local crawler = Crawler(c, grid_size)
-      crawlers[#crawlers + 1] = crawler
-      world:add(crawler, crawler.x, crawler.y, crawler.w, crawler.h)
-    end
-  end
-
-  local function on_level_loading_entities()
-    for _, crawler in ipairs(crawlers) do
-      world:remove(crawler)
-    end
-    crawlers = {}
+    add_crawlers()
   end
 
   local function update_entities(dt)
-    for _, crawler in ipairs(crawlers) do
+    for _, crawler in ipairs(entities.crawlers) do
       crawler:update(dt, world)
+    end
+    for _, bullet in ipairs(entities.bullets) do
+      bullet:update(dt, world)
     end
     player:update(dt, world)
   end
 
   local function draw_entities()
-    for _, crawler in ipairs(crawlers) do
+    for _, crawler in ipairs(entities.crawlers) do
       crawler:draw()
+    end
+    for _, bullet in ipairs(entities.bullets) do
+      bullet:draw()
     end
     player:draw()
   end
@@ -78,7 +96,6 @@ function GameScreen.new()
   -- GAME
   function self:init()
     player = {}
-    crawlers = {}
     world = {}
     map = {}
     paused = true
@@ -99,6 +116,7 @@ function GameScreen.new()
         SIGNALS.NEXT_LEVEL, function(params)
           paused = true
           on_level_loading_entities()
+          love.audio.play("assets/door.ogg", "static", nil, 0.7)
           camera:fade(
               0.1, { 0, 0, 0, 1 }, function()
                 map:nextLevel(
@@ -114,6 +132,29 @@ function GameScreen.new()
                 paused = false
                 on_level_loaded_entities()
               end)
+        end)
+    Signal.register(
+        SIGNALS.SHOOT, function(x, y, dx, dy)
+          entities.bullets[#entities.bullets + 1] = Bullet(
+                                                        x, y, dx, dy, world,
+                                                        map.active.width,
+                                                        map.active.height,
+                                                        "bullets")
+        end)
+    Signal.register(
+        SIGNALS.DESTROY_ITEM, function(item, item_table_name)
+          world:remove(item)
+          local item_table = entities[item_table_name]
+          local found = nil
+          for i, el in ipairs(item_table) do
+            if el == item then
+              found = i
+              break
+            end
+          end
+          if found then
+            table.remove(item_table, found)
+          end
         end)
   end
 
