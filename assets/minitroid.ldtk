@@ -31,6 +31,25 @@
 	"flags": [],
 	"defs": { "layers": [
 		{
+			"__type": "Entities",
+			"identifier": "Entities",
+			"type": "Entities",
+			"uid": 8,
+			"gridSize": 4,
+			"displayOpacity": 1,
+			"pxOffsetX": 0,
+			"pxOffsetY": 0,
+			"requiredTags": [],
+			"excludedTags": [],
+			"intGridValues": [{ "value": 1, "identifier": null, "color": "#000000" }],
+			"autoTilesetDefUid": null,
+			"autoRuleGroups": [],
+			"autoSourceLayerDefUid": null,
+			"tilesetDefUid": null,
+			"tilePivotX": 0,
+			"tilePivotY": 0
+		},
+		{
 			"__type": "AutoLayer",
 			"identifier": "Tiles",
 			"type": "AutoLayer",
@@ -233,25 +252,6 @@
 			"tilePivotY": 0
 		},
 		{
-			"__type": "Entities",
-			"identifier": "Entities",
-			"type": "Entities",
-			"uid": 8,
-			"gridSize": 4,
-			"displayOpacity": 1,
-			"pxOffsetX": 0,
-			"pxOffsetY": 0,
-			"requiredTags": [],
-			"excludedTags": [],
-			"intGridValues": [{ "value": 1, "identifier": null, "color": "#000000" }],
-			"autoTilesetDefUid": null,
-			"autoRuleGroups": [],
-			"autoSourceLayerDefUid": null,
-			"tilesetDefUid": null,
-			"tilePivotX": 0,
-			"tilePivotY": 0
-		},
-		{
 			"__type": "IntGrid",
 			"identifier": "Collisions",
 			"type": "IntGrid",
@@ -358,7 +358,7 @@
 			"enumTags": [],
 			"customData": [],
 			"savedSelections": [],
-			"cachedPixelData": { "opaqueTiles": "110100000", "averageColors": "f446f234709ef234909e909e709e709e709e" }
+			"cachedPixelData": { "opaqueTiles": "110111000", "averageColors": "f446f234d47bf234f17bf17bd47bd47bd47b" }
 		},
 		{
 			"__cWid": 13,
@@ -417,6 +417,43 @@
 			"externalRelPath": null,
 			"fieldInstances": [],
 			"layerInstances": [
+				{
+					"__identifier": "Entities",
+					"__type": "Entities",
+					"__cWid": 64,
+					"__cHei": 64,
+					"__gridSize": 4,
+					"__opacity": 1,
+					"__pxTotalOffsetX": 0,
+					"__pxTotalOffsetY": 0,
+					"__tilesetDefUid": null,
+					"__tilesetRelPath": null,
+					"levelId": 0,
+					"layerDefUid": 8,
+					"pxOffsetX": 0,
+					"pxOffsetY": 0,
+					"visible": true,
+					"optionalRules": [],
+					"intGrid": [],
+					"intGridCsv": [],
+					"autoLayerTiles": [],
+					"seed": 2825548,
+					"overrideTilesetUid": null,
+					"gridTiles": [],
+					"entityInstances": [
+						{
+							"__identifier": "Player",
+							"__grid": [32,2],
+							"__pivot": [0,0],
+							"__tile": { "tilesetUid": 12, "srcRect": [0,0,8,8] },
+							"width": 8,
+							"height": 11,
+							"defUid": 6,
+							"px": [128,8],
+							"fieldInstances": []
+						}
+					]
+				},
 				{
 					"__identifier": "Tiles",
 					"__type": "AutoLayer",
@@ -1306,43 +1343,6 @@
 					"overrideTilesetUid": null,
 					"gridTiles": [],
 					"entityInstances": []
-				},
-				{
-					"__identifier": "Entities",
-					"__type": "Entities",
-					"__cWid": 64,
-					"__cHei": 64,
-					"__gridSize": 4,
-					"__opacity": 1,
-					"__pxTotalOffsetX": 0,
-					"__pxTotalOffsetY": 0,
-					"__tilesetDefUid": null,
-					"__tilesetRelPath": null,
-					"levelId": 0,
-					"layerDefUid": 8,
-					"pxOffsetX": 0,
-					"pxOffsetY": 0,
-					"visible": true,
-					"optionalRules": [],
-					"intGrid": [],
-					"intGridCsv": [],
-					"autoLayerTiles": [],
-					"seed": 2825548,
-					"overrideTilesetUid": null,
-					"gridTiles": [],
-					"entityInstances": [
-						{
-							"__identifier": "Player",
-							"__grid": [32,2],
-							"__pivot": [0,0],
-							"__tile": { "tilesetUid": 12, "srcRect": [0,0,8,8] },
-							"width": 8,
-							"height": 11,
-							"defUid": 6,
-							"px": [128,8],
-							"fieldInstances": []
-						}
-					]
 				},
 				{
 					"__identifier": "Collisions",
@@ -2286,6 +2286,81 @@
 			"externalRelPath": null,
 			"fieldInstances": [],
 			"layerInstances": [
+				{
+					"__identifier": "Entities",
+					"__type": "Entities",
+					"__cWid": 64,
+					"__cHei": 64,
+					"__gridSize": 4,
+					"__opacity": 1,
+					"__pxTotalOffsetX": 0,
+					"__pxTotalOffsetY": 0,
+					"__tilesetDefUid": null,
+					"__tilesetRelPath": null,
+					"levelId": 21,
+					"layerDefUid": 8,
+					"pxOffsetX": 0,
+					"pxOffsetY": 0,
+					"visible": true,
+					"optionalRules": [],
+					"intGrid": [],
+					"intGridCsv": [],
+					"autoLayerTiles": [],
+					"seed": 418802,
+					"overrideTilesetUid": null,
+					"gridTiles": [],
+					"entityInstances": [
+						{
+							"__identifier": "Crawler",
+							"__grid": [36,23],
+							"__pivot": [0,0],
+							"__tile": { "tilesetUid": 18, "srcRect": [0,0,4,4] },
+							"width": 5,
+							"height": 4,
+							"defUid": 17,
+							"px": [144,92],
+							"fieldInstances": [{
+								"__identifier": "path",
+								"__value": [
+									{ "cx": 36, "cy": 23 },
+									{ "cx": 37, "cy": 23 },
+									{ "cx": 38, "cy": 23 },
+									{ "cx": 39, "cy": 23 },
+									{ "cx": 40, "cy": 23 },
+									{ "cx": 41, "cy": 23 }
+								],
+								"__type": "Array<Point>",
+								"defUid": 19,
+								"realEditorValues": [
+									{
+										"id": "V_String",
+										"params": ["36,23"]
+									},
+									{
+										"id": "V_String",
+										"params": ["37,23"]
+									},
+									{
+										"id": "V_String",
+										"params": ["38,23"]
+									},
+									{
+										"id": "V_String",
+										"params": ["39,23"]
+									},
+									{
+										"id": "V_String",
+										"params": ["40,23"]
+									},
+									{
+										"id": "V_String",
+										"params": ["41,23"]
+									}
+								]
+							}]
+						}
+					]
+				},
 				{
 					"__identifier": "Tiles",
 					"__type": "AutoLayer",
@@ -3250,81 +3325,6 @@
 					"overrideTilesetUid": null,
 					"gridTiles": [],
 					"entityInstances": []
-				},
-				{
-					"__identifier": "Entities",
-					"__type": "Entities",
-					"__cWid": 64,
-					"__cHei": 64,
-					"__gridSize": 4,
-					"__opacity": 1,
-					"__pxTotalOffsetX": 0,
-					"__pxTotalOffsetY": 0,
-					"__tilesetDefUid": null,
-					"__tilesetRelPath": null,
-					"levelId": 21,
-					"layerDefUid": 8,
-					"pxOffsetX": 0,
-					"pxOffsetY": 0,
-					"visible": true,
-					"optionalRules": [],
-					"intGrid": [],
-					"intGridCsv": [],
-					"autoLayerTiles": [],
-					"seed": 418802,
-					"overrideTilesetUid": null,
-					"gridTiles": [],
-					"entityInstances": [
-						{
-							"__identifier": "Crawler",
-							"__grid": [36,23],
-							"__pivot": [0,0],
-							"__tile": { "tilesetUid": 18, "srcRect": [0,0,4,4] },
-							"width": 5,
-							"height": 4,
-							"defUid": 17,
-							"px": [144,92],
-							"fieldInstances": [{
-								"__identifier": "path",
-								"__value": [
-									{ "cx": 36, "cy": 23 },
-									{ "cx": 37, "cy": 23 },
-									{ "cx": 38, "cy": 23 },
-									{ "cx": 39, "cy": 23 },
-									{ "cx": 40, "cy": 23 },
-									{ "cx": 41, "cy": 23 }
-								],
-								"__type": "Array<Point>",
-								"defUid": 19,
-								"realEditorValues": [
-									{
-										"id": "V_String",
-										"params": ["36,23"]
-									},
-									{
-										"id": "V_String",
-										"params": ["37,23"]
-									},
-									{
-										"id": "V_String",
-										"params": ["38,23"]
-									},
-									{
-										"id": "V_String",
-										"params": ["39,23"]
-									},
-									{
-										"id": "V_String",
-										"params": ["40,23"]
-									},
-									{
-										"id": "V_String",
-										"params": ["41,23"]
-									}
-								]
-							}]
-						}
-					]
 				},
 				{
 					"__identifier": "Collisions",
@@ -4343,6 +4343,31 @@
 			"externalRelPath": null,
 			"fieldInstances": [],
 			"layerInstances": [
+				{
+					"__identifier": "Entities",
+					"__type": "Entities",
+					"__cWid": 64,
+					"__cHei": 64,
+					"__gridSize": 4,
+					"__opacity": 1,
+					"__pxTotalOffsetX": 0,
+					"__pxTotalOffsetY": 0,
+					"__tilesetDefUid": null,
+					"__tilesetRelPath": null,
+					"levelId": 22,
+					"layerDefUid": 8,
+					"pxOffsetX": 0,
+					"pxOffsetY": 0,
+					"visible": true,
+					"optionalRules": [],
+					"intGrid": [],
+					"intGridCsv": [],
+					"autoLayerTiles": [],
+					"seed": 621780,
+					"overrideTilesetUid": null,
+					"gridTiles": [],
+					"entityInstances": []
+				},
 				{
 					"__identifier": "Tiles",
 					"__type": "AutoLayer",
@@ -5374,31 +5399,6 @@
 						{ "px": [0,72], "src": [23,1], "f": 0, "t": 2, "d": [29,288] }
 					],
 					"seed": 1794471,
-					"overrideTilesetUid": null,
-					"gridTiles": [],
-					"entityInstances": []
-				},
-				{
-					"__identifier": "Entities",
-					"__type": "Entities",
-					"__cWid": 64,
-					"__cHei": 64,
-					"__gridSize": 4,
-					"__opacity": 1,
-					"__pxTotalOffsetX": 0,
-					"__pxTotalOffsetY": 0,
-					"__tilesetDefUid": null,
-					"__tilesetRelPath": null,
-					"levelId": 22,
-					"layerDefUid": 8,
-					"pxOffsetX": 0,
-					"pxOffsetY": 0,
-					"visible": true,
-					"optionalRules": [],
-					"intGrid": [],
-					"intGridCsv": [],
-					"autoLayerTiles": [],
-					"seed": 621780,
 					"overrideTilesetUid": null,
 					"gridTiles": [],
 					"entityInstances": []
