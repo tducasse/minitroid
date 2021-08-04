@@ -202,6 +202,7 @@ end
 
 function Player:cross(other)
   if other.type == "item" then
+    love.audio.play("assets/pickup.ogg", "static", nil, 0.7)
     if other.item == "ball" then
       other:destroy()
       self.roll = true
