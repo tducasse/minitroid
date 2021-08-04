@@ -7,15 +7,20 @@ function MenuScreen.new()
   local self = Screen.new()
 
   local push = require("lib.push")
+
   local big = love.graphics.newFont("assets/visitor1.ttf", 14, "mono")
   local medium = love.graphics.newFont("assets/visitor1.ttf", 8, "mono")
 
+  local music = {}
+
   function self:init()
+    music = love.audio.play("assets/menu.ogg", "static", true)
   end
 
   function self:update()
     Input:update()
     if Input:pressed("jump") then
+      love.audio.stop(music)
       ScreenManager.switch("game")
     end
   end

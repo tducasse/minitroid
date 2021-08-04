@@ -6,6 +6,8 @@ SIGNALS = {
   HIT = "hit",
 }
 
+MUSIC = { DEFAULT = "assets/music.ogg", SECRET = "assets/secret.ogg" }
+
 RES_X = 64
 RES_Y = 64
 WIN_X = 640

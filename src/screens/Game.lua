@@ -26,6 +26,7 @@ function GameScreen.new()
   local map = {}
   local paused = false
   local music = {}
+  local current_music = nil
   local entities = { bullets = {}, crawlers = {}, items = {} }
 
   local function add_crawlers()
@@ -52,10 +53,25 @@ function GameScreen.new()
     world:add(player, player.x, player.y, player.w, player.h)
   end
 
-  local function init_entities()
+  local function play_level_music()
+    local song = MUSIC.DEFAULT
+    if current_music == MUSIC.DEFAULT then
+      if map.active.secret then
+        song = MUSIC.SECRET
+      end
+    end
+    if current_music ~= song then
+      love.audio.stop(music)
+      music = love.audio.play(song, "static", true)
+      current_music = song
+    end
+  end
+
+  local function init_level()
     add_player()
     add_crawlers()
     add_items()
+    play_level_music()
   end
 
   local function remove_collection(collection)
@@ -71,14 +87,15 @@ function GameScreen.new()
     end
   end
 
-  local function on_level_loading_entities()
+  local function on_level_loading()
     remove_entities()
   end
 
-  local function on_level_loaded_entities()
+  local function on_level_loaded()
     player:onLevelLoaded()
     add_crawlers()
     add_items()
+    play_level_music()
   end
 
   local function update_collection(collection, dt)
@@ -117,7 +134,6 @@ function GameScreen.new()
     world = {}
     map = {}
     paused = false
-    music = love.audio.play("assets/music.ogg", "static", true)
 
     -- MAP
     map = Tilemapper(
@@ -126,13 +142,13 @@ function GameScreen.new()
     world = bump.newWorld()
     map:loadLevel("Level_0", world)
     camera:setBounds(0, 0, map.active.width, map.active.height)
-    init_entities()
+    init_level()
 
     -- SIGNALS
     Signal.register(
         SIGNALS.NEXT_LEVEL, function(params)
           paused = true
-          on_level_loading_entities()
+          on_level_loading()
           love.audio.play("assets/door.ogg", "static", nil, 0.7)
           camera:fade(
               0.1, { 0, 0, 0, 1 }, function()
@@ -147,7 +163,7 @@ function GameScreen.new()
           camera:fade(
               0.1, { 0, 0, 0, 0 }, function()
                 paused = false
-                on_level_loaded_entities()
+                on_level_loaded()
               end)
         end)
     Signal.register(
