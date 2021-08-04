@@ -175,6 +175,12 @@ function GameScreen.new()
             table.remove(item_table, found)
           end
         end)
+
+    Signal.register(
+        SIGNALS.HIT, function()
+          camera:flash(0.05, { 24 / 255, 20 / 255, 37 / 255, 255 / 255, 1 })
+          camera:shake(1, 0.1, 60)
+        end)
   end
 
   function self:update(dt)

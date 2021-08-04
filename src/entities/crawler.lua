@@ -49,7 +49,7 @@ function Crawler:update(dt, world)
 end
 
 function Crawler:filter()
-  return nil
+  return "cross"
 end
 
 function Crawler:new(c, grid_size, collection)

@@ -69,11 +69,11 @@ function Player:update(dt, world)
     self.shooting = false
   end
 
-  if math.abs(self.x_velocity) > 0.1 then
+  if math.abs(self.x_velocity) > 10 then
     if not self.bouncing then
       self.x_velocity = self.x_velocity - self.last_dir * self.friction
     else
-      self.x_velocity = self.x_velocity / 2
+      self.x_velocity = -self.last_dir * (math.abs(self.x_velocity) / 2)
     end
   else
     if self.bouncing then
@@ -197,7 +197,7 @@ function Player:bounce(other)
     self:hit(1)
   end
   self.bouncing = true
-  self.x_velocity = self.bounciness * -self.last_dir
+  self.x_velocity = self.bounciness * self.last_dir
 end
 
 function Player:cross(other)
@@ -212,6 +212,7 @@ end
 function Player:hit(hit)
   love.audio.play("assets/hurt.ogg", "static", nil, 0.7)
   self.hp = self.hp - hit
+  Signal.emit(SIGNALS.HIT)
   if self.hp < 0 then
     print("dead")
   end
@@ -220,7 +221,11 @@ end
 function Player:filter(other)
   if other.type then
     if other.type == "crawler" then
-      return "bounce"
+      if not self.bouncing then
+        return "bounce"
+      else
+        return nil
+      end
     elseif other.type == "bullet" then
       return nil
     elseif other.type == "item" then
@@ -271,7 +276,7 @@ function Player:new(p, map_width, map_height)
   self.jumping = false
   self.y_velocity = 0
   self.x_velocity = 0
-  self.bounciness = 500
+  self.bounciness = 200
   self.bouncing = false
 
   -- LEVEL BOUNDARIES

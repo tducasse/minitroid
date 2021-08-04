@@ -3,6 +3,7 @@ SIGNALS = {
   LEVEL_LOADED = "level_loaded",
   SHOOT = "shoot_bullet",
   DESTROY_ITEM = "destroy_item",
+  HIT = "hit",
 }
 
 RES_X = 64
