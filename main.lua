@@ -39,8 +39,11 @@ function love.load()
       })
 
   -- SCREENS
-  local screens = { game = require("src.screens.Game") }
-  ScreenManager.init(screens, "game")
+  local screens = {
+    game = require("src.screens.Game"),
+    menu = require("src.screens.Menu"),
+  }
+  ScreenManager.init(screens, "menu")
   ScreenManager.registerCallbacks()
 end
 

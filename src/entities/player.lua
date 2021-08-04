@@ -73,7 +73,7 @@ function Player:update(dt, world)
     if not self.bouncing then
       self.x_velocity = self.x_velocity - self.last_dir * self.friction
     else
-      self.x_velocity = -self.last_dir * (math.abs(self.x_velocity) / 2)
+      self.x_velocity = self.x_velocity / 2
     end
   else
     if self.bouncing then
@@ -167,7 +167,7 @@ function Player:update(dt, world)
     if col.type == "cross" then
       self:cross(col.other)
     elseif col.type == "bounce" then
-      self:bounce(col.other.type)
+      self:bounce(col.other)
     elseif col.normal.y == 1 then
       self.y_velocity = 0
     elseif col.normal.y == -1 then
@@ -193,11 +193,13 @@ function Player:bounce(other)
   if self.bouncing then
     return
   end
-  if other == "crawler" then
+  if other.type == "crawler" then
     self:hit(1)
   end
   self.bouncing = true
-  self.x_velocity = self.bounciness * self.last_dir
+  local diff = (self.x + self.w / 2) - (other.x + other.w / 2)
+  local dir = diff / math.abs(diff)
+  self.x_velocity = self.bounciness * dir
 end
 
 function Player:cross(other)
@@ -277,7 +279,7 @@ function Player:new(p, map_width, map_height)
   self.jumping = false
   self.y_velocity = 0
   self.x_velocity = 0
-  self.bounciness = 200
+  self.bounciness = 600
   self.bouncing = false
 
   -- LEVEL BOUNDARIES

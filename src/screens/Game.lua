@@ -24,8 +24,7 @@ function GameScreen.new()
   local player = {}
   local world = {}
   local map = {}
-  local paused = true
-  local started = false
+  local paused = false
   local music = {}
   local entities = { bullets = {}, crawlers = {}, items = {} }
 
@@ -117,9 +116,8 @@ function GameScreen.new()
     player = {}
     world = {}
     map = {}
-    paused = true
-    started = false
-    -- music = love.audio.play("assets/music.ogg", "static", true)
+    paused = false
+    music = love.audio.play("assets/music.ogg", "static", true)
 
     -- MAP
     map = Tilemapper(
@@ -185,15 +183,6 @@ function GameScreen.new()
 
   function self:update(dt)
     Input:update()
-    if not started and Input:pressed("jump") then
-      paused = false
-      started = true
-    end
-    -- if Input:pressed("cancel") then
-    -- love.audio.stop(music)
-    -- ScreenManager.switch("splash")
-    -- love.event.quit()
-    -- end
     love.audio.update()
     if not paused then
       update_entities(dt)
