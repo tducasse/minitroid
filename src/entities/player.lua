@@ -23,10 +23,14 @@ function Player:moveOutOfBounds()
     x = self.east - self.w - self.w / 3
   elseif self.y > self.south - self.h / 3 then
     dir = "s"
-    y = self.north + self.h + self.h / 3
+    y = self.north + self.h / 3
+    self.jumping = false
+    self.rolling = false
   elseif self.y < self.north - self.h / 3 then
     dir = "n"
     y = self.south - self.h - self.h / 3
+    self.jumping = false
+    self.rolling = false
   end
   if dir then
     self:stop_rolling()
@@ -88,7 +92,7 @@ function Player:update(dt, world)
       self:start_rolling()
     end
   end
-  if Input:pressed("up") and self.rolling then
+  if Input:pressed("up") and self.rolling and not self.ceiling then
     self:stop_rolling()
   end
 
@@ -186,6 +190,14 @@ function Player:update(dt, world)
     self.sprite:setTag("shoot")
   end
 
+  local _, _, cols = world:check(self, self.x, self.y - self.rolling_y)
+  self.ceiling = false
+  for _, col in pairs(cols) do
+    if col.normal.y == 1 then
+      self.ceiling = true
+    end
+  end
+
   self:moveOutOfBounds()
 end
 
@@ -274,6 +286,7 @@ function Player:new(p, map_width, map_height)
   self.speed = 50
   self.friction = 5
   self.ground = false
+  self.ceiling = false
   self.jump_height = -95
   self.gravity = 150
   self.jumping = false

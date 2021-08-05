@@ -220,8 +220,11 @@ function GameScreen.new()
     -- local items = world:getItems()
     -- for i = 1, #items do
     --   local item = items[i]
-    --   love.graphics.rectangle("line", item.x, item.y, item.w, item.h)
+    --   if item.x and item.y and item.w and item.h then
+    --     love.graphics.rectangle("line", item.x, item.y, item.w, item.h)
+    --   end
     -- end
+
     camera:detach()
     camera:draw()
     if not paused then
