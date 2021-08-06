@@ -1,7 +1,7 @@
 { "frames": [
    {
     "filename": "tileset 0.aseprite",
-    "frame": { "x": 0, "y": 0, "w": 10, "h": 10 },
+    "frame": { "x": 1, "y": 1, "w": 8, "h": 8 },
     "rotated": false,
     "trimmed": false,
     "spriteSourceSize": { "x": 0, "y": 0, "w": 8, "h": 8 },
@@ -10,7 +10,7 @@
    },
    {
     "filename": "tileset 1.aseprite",
-    "frame": { "x": 11, "y": 0, "w": 10, "h": 10 },
+    "frame": { "x": 11, "y": 1, "w": 8, "h": 8 },
     "rotated": false,
     "trimmed": false,
     "spriteSourceSize": { "x": 0, "y": 0, "w": 8, "h": 8 },
@@ -19,7 +19,7 @@
    },
    {
     "filename": "tileset 2.aseprite",
-    "frame": { "x": 22, "y": 0, "w": 10, "h": 10 },
+    "frame": { "x": 21, "y": 1, "w": 8, "h": 8 },
     "rotated": false,
     "trimmed": false,
     "spriteSourceSize": { "x": 0, "y": 0, "w": 8, "h": 8 },
@@ -28,7 +28,7 @@
    },
    {
     "filename": "tileset 3.aseprite",
-    "frame": { "x": 33, "y": 0, "w": 10, "h": 10 },
+    "frame": { "x": 31, "y": 1, "w": 8, "h": 8 },
     "rotated": false,
     "trimmed": false,
     "spriteSourceSize": { "x": 0, "y": 0, "w": 8, "h": 8 },
@@ -37,7 +37,7 @@
    },
    {
     "filename": "tileset 4.aseprite",
-    "frame": { "x": 44, "y": 0, "w": 10, "h": 10 },
+    "frame": { "x": 41, "y": 1, "w": 8, "h": 8 },
     "rotated": false,
     "trimmed": false,
     "spriteSourceSize": { "x": 0, "y": 0, "w": 8, "h": 8 },
@@ -46,7 +46,7 @@
    },
    {
     "filename": "tileset 5.aseprite",
-    "frame": { "x": 55, "y": 0, "w": 10, "h": 10 },
+    "frame": { "x": 51, "y": 1, "w": 8, "h": 8 },
     "rotated": false,
     "trimmed": false,
     "spriteSourceSize": { "x": 0, "y": 0, "w": 8, "h": 8 },
@@ -55,7 +55,7 @@
    },
    {
     "filename": "tileset 6.aseprite",
-    "frame": { "x": 66, "y": 0, "w": 10, "h": 10 },
+    "frame": { "x": 61, "y": 1, "w": 8, "h": 8 },
     "rotated": false,
     "trimmed": false,
     "spriteSourceSize": { "x": 0, "y": 0, "w": 8, "h": 8 },
@@ -64,7 +64,7 @@
    },
    {
     "filename": "tileset 7.aseprite",
-    "frame": { "x": 77, "y": 0, "w": 10, "h": 10 },
+    "frame": { "x": 71, "y": 1, "w": 8, "h": 8 },
     "rotated": false,
     "trimmed": false,
     "spriteSourceSize": { "x": 0, "y": 0, "w": 8, "h": 8 },
@@ -73,7 +73,7 @@
    },
    {
     "filename": "tileset 8.aseprite",
-    "frame": { "x": 88, "y": 0, "w": 10, "h": 10 },
+    "frame": { "x": 81, "y": 1, "w": 8, "h": 8 },
     "rotated": false,
     "trimmed": false,
     "spriteSourceSize": { "x": 0, "y": 0, "w": 8, "h": 8 },
@@ -82,7 +82,7 @@
    },
    {
     "filename": "tileset 9.aseprite",
-    "frame": { "x": 99, "y": 0, "w": 10, "h": 10 },
+    "frame": { "x": 91, "y": 1, "w": 8, "h": 8 },
     "rotated": false,
     "trimmed": false,
     "spriteSourceSize": { "x": 0, "y": 0, "w": 8, "h": 8 },
@@ -91,7 +91,7 @@
    },
    {
     "filename": "tileset 10.aseprite",
-    "frame": { "x": 110, "y": 0, "w": 10, "h": 10 },
+    "frame": { "x": 101, "y": 1, "w": 8, "h": 8 },
     "rotated": false,
     "trimmed": false,
     "spriteSourceSize": { "x": 0, "y": 0, "w": 8, "h": 8 },
@@ -100,7 +100,7 @@
    },
    {
     "filename": "tileset 11.aseprite",
-    "frame": { "x": 121, "y": 0, "w": 10, "h": 10 },
+    "frame": { "x": 111, "y": 1, "w": 8, "h": 8 },
     "rotated": false,
     "trimmed": false,
     "spriteSourceSize": { "x": 0, "y": 0, "w": 8, "h": 8 },
@@ -109,7 +109,7 @@
    },
    {
     "filename": "tileset 12.aseprite",
-    "frame": { "x": 132, "y": 0, "w": 10, "h": 10 },
+    "frame": { "x": 121, "y": 1, "w": 8, "h": 8 },
     "rotated": false,
     "trimmed": false,
     "spriteSourceSize": { "x": 0, "y": 0, "w": 8, "h": 8 },
@@ -118,7 +118,7 @@
    },
    {
     "filename": "tileset 13.aseprite",
-    "frame": { "x": 143, "y": 0, "w": 10, "h": 10 },
+    "frame": { "x": 131, "y": 1, "w": 8, "h": 8 },
     "rotated": false,
     "trimmed": false,
     "spriteSourceSize": { "x": 0, "y": 0, "w": 8, "h": 8 },
@@ -127,7 +127,7 @@
    },
    {
     "filename": "tileset 14.aseprite",
-    "frame": { "x": 154, "y": 0, "w": 10, "h": 10 },
+    "frame": { "x": 141, "y": 1, "w": 8, "h": 8 },
     "rotated": false,
     "trimmed": false,
     "spriteSourceSize": { "x": 0, "y": 0, "w": 8, "h": 8 },
@@ -140,7 +140,7 @@
   "version": "1.x-dev",
   "image": "tileset.png",
   "format": "RGBA8888",
-  "size": { "w": 164, "h": 10 },
+  "size": { "w": 150, "h": 10 },
   "scale": "1",
   "frameTags": [
   ],
