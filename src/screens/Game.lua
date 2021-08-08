@@ -211,10 +211,10 @@ function GameScreen.new()
     push:start()
     camera:attach()
 
-    love.graphics.clear(24 / 255, 20 / 255, 37 / 255, 255 / 255)
+    love.graphics.clear()
     if not paused then
-      draw_entities()
       map:draw()
+      draw_entities()
     end
 
     -- local items = world:getItems()

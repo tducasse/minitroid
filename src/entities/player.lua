@@ -41,20 +41,41 @@ function Player:moveOutOfBounds()
   end
 end
 
+function Player:start_morphing()
+  if self.rolling or self.morphing then
+    return
+  end
+  self.morphing = true
+  self.next_tag = "Morph"
+end
+
+function Player:start_morphing_out()
+  if not self.rolling or self.standing then
+    return
+  end
+  self.standing = true
+  self.next_tag = "Stand"
+end
+
 function Player:start_rolling()
   self.rolling = true
+  self.morphing = false
+  self.next_tag = "Ball"
   self.x = self.x - self.rolling_x
   self.world:update(
       self, self.x + self.rolling_x, self.y + self.rolling_y, self.rolling_w,
       self.rolling_h)
-  self.sprite:setTag("ball")
 end
 
 function Player:stop_rolling()
+  if not self.rolling then
+    return
+  end
+  self.standing = false
   self.rolling = false
   self.x = self.x + self.rolling_x
   self.world:update(self, self.x, self.y, self.w, self.h)
-  self.sprite:setTag("idle")
+  self.next_tag = "Idle"
 end
 
 function Player:update(dt, world)
@@ -89,46 +110,59 @@ function Player:update(dt, world)
 
   if self.ground then
     if Input:pressed("down") and self.roll then
-      self:start_rolling()
+      self:start_morphing()
     end
   end
   if Input:pressed("up") and self.rolling and not self.ceiling then
-    self:stop_rolling()
+    self:start_morphing_out()
   end
 
   if not self.bouncing then
     if x_axis > 0 then
       self.x_velocity = self.speed
       if self.ground then
-        if self.rolling then
-          self.sprite:setTag("rolling")
+        if self.rolling and not self.standing then
+          self.next_tag = "Roll"
+        elseif self.morphing then
+          self.next_tag = "Morph"
+        elseif self.standing then
+          self.next_tag = "Stand"
         else
-          self.sprite:setTag("run")
+          self.next_tag = "Run"
         end
       end
       self.last_dir = 1
     elseif x_axis < 0 then
       self.x_velocity = -self.speed
       if self.ground then
-        if self.rolling then
-          self.sprite:setTag("rolling")
+        if self.rolling and not self.standing then
+          self.next_tag = "Roll"
+        elseif self.morphing then
+          self.next_tag = "Morph"
+        elseif self.standing then
+          self.next_tag = "Stand"
         else
-          self.sprite:setTag("run")
+          self.next_tag = "Run"
         end
       end
       self.last_dir = -1
     else
       if self.ground then
-        if self.rolling then
-          self.sprite:setTag("ball")
+        if self.rolling and not self.standing then
+          self.next_tag = "Ball"
+        elseif self.morphing then
+          self.next_tag = "Morph"
+        elseif self.standing then
+          self.next_tag = "Stand"
         else
-          self.sprite:setTag("idle")
+          self.next_tag = "Idle"
         end
       end
     end
 
     if Input:down("jump") and not self.rolling then
       if self.ground and not self.jumping then
+        self.morphing = false
         love.audio.play("assets/jump.ogg", "static", nil, 0.7)
         self.jumping = true
         self.y_velocity = self.jump_height
@@ -141,8 +175,9 @@ function Player:update(dt, world)
 
     if Input:down("shoot") and not self.rolling then
       if not self.shooting then
+        self.morphing = false
         love.audio.play("assets/shoot.ogg", "static", nil, 0.3)
-        self.sprite:setTag("shoot")
+        still_shooting = true
         self.shooting = love.timer.getTime()
         Signal.emit(
             SIGNALS.SHOOT, self.x + (self.last_dir > 0 and self.w or 0),
@@ -183,11 +218,18 @@ function Player:update(dt, world)
   self.ground = ground
 
   if not self.ground and not self.rolling then
-    self.sprite:setTag("jump")
+    self.next_tag = "Jump"
   end
 
   if still_shooting then
-    self.sprite:setTag("shoot")
+    if not self.ground then
+      self.next_tag = "Jump aim"
+    elseif self.x_velocity ~= 0 then
+      self.next_tag = "Run aim"
+    else
+      self.next_tag = "Idle aim"
+    end
+
   end
 
   local _, _, cols = world:check(self, self.x, self.y - self.rolling_y)
@@ -198,7 +240,17 @@ function Player:update(dt, world)
     end
   end
 
+  self.sprite:setTag(self.next_tag)
+
   self:moveOutOfBounds()
+end
+
+function Player:onLoop()
+  if self.sprite.tagName == "Morph" then
+    self:start_rolling()
+  elseif self.sprite.tagName == "Stand" then
+    self:stop_rolling()
+  end
 end
 
 function Player:bounce(other)
@@ -252,6 +304,7 @@ function Player:filter(other)
 end
 
 function Player:onLevelLoaded()
+  self.jumping = false
   self.world:add(self, self.x, self.y, self.w, self.h)
 end
 
@@ -294,6 +347,8 @@ function Player:new(p, map_width, map_height)
   self.x_velocity = 0
   self.bounciness = 600
   self.bouncing = false
+  self.morphing = false
+  self.standing = false
 
   -- LEVEL BOUNDARIES
   self.east = map_width
@@ -304,7 +359,9 @@ function Player:new(p, map_width, map_height)
   -- DRAWING
   self.sprite = peachy.new(
                     "assets/player.json",
-                    love.graphics.newImage("assets/player.png"), "idle")
+                    love.graphics.newImage("assets/player.png"), "Idle")
+
+  self.sprite:onLoop(self.onLoop, self)
   self.last_dir = 1
   self.sprite:play()
 end

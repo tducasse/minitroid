@@ -6,10 +6,34 @@ function Crawler:draw()
   local top = self.top or 0
   local x = self.x - left
   local y = self.y - top
-  if self.last_dir == -1 then
+
+  local straight = self.sprite.tagName == "Straight"
+
+  local scale_y = 1
+  local scale_x = 1
+
+  if straight then
+    if self.center.y > self.y then
+      scale_y = 1
+    else
+      scale_y = -1
+    end
+  else
+    if self.center.x > self.x then
+      scale_x = -1
+    else
+      scale_x = 1
+    end
+  end
+
+  if scale_x == -1 then
     x = x + self.w + left * 2
   end
-  self.sprite:draw(x, y, 0, self.last_dir)
+  if scale_y == -1 then
+    y = y + self.h + top * 2
+  end
+
+  self.sprite:draw(x, y, 0, scale_x, scale_y)
 end
 
 function Crawler:update_target()
@@ -38,14 +62,21 @@ function Crawler:update(dt, world)
   end
   self.sprite:update(dt)
   self:update_target()
-  local x =
-      self.x + ((self.target.x - self.x) / self:distance_to(self.target)) * dt *
-          self.speed
-  local y =
-      self.y + ((self.target.y - self.y) / self:distance_to(self.target)) * dt *
-          self.speed
+  self.x_velocity = ((self.target.x - self.x) / self:distance_to(self.target)) *
+                        dt * self.speed
+  self.y_velocity = ((self.target.y - self.y) / self:distance_to(self.target)) *
+                        dt * self.speed
+  local x = self.x + self.x_velocity
+  local y = self.y + self.y_velocity
 
   self.x, self.y = self.world:move(self, x, y, self.filter)
+
+  if math.abs(self.y_velocity) > math.abs(self.x_velocity) then
+    self.sprite:setTag("Side")
+  else
+    self.sprite:setTag("Straight")
+  end
+
 end
 
 function Crawler:filter()
@@ -63,6 +94,7 @@ function Crawler:new(c, grid_size, collection)
   self.left = c.left
   self.w = c.w
   self.h = c.h
+  self.center = { x = c.center.cx * grid_size, y = c.center.cy * grid_size }
 
   -- MOVEMENT
   self.path = {}
@@ -73,11 +105,13 @@ function Crawler:new(c, grid_size, collection)
   self.path_index = 1
   self.last_dir = 1
   self.speed = 10
+  self.x_velocity = 0
+  self.y_velocity = 0
 
   -- DRAWING
   self.sprite = peachy.new(
                     "assets/crawler.json",
-                    love.graphics.newImage("assets/crawler.png"), "walk")
+                    love.graphics.newImage("assets/crawler.png"), "Straight")
   self.sprite:play()
 end
 
