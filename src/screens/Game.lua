@@ -43,6 +43,17 @@ function GameScreen.new()
     turrets = {},
   }
 
+  local entity_order = {
+    "acid",
+    "acid_pole",
+    "mother",
+    "fluid",
+    "turrets",
+    "crawlers",
+    "items",
+    "bullets",
+  }
+
   local function add_crawlers()
     local grid_size = map.active.Entities.grid_size
     for _, c in ipairs(map.active.Entities.Crawlers or {}) do
@@ -186,7 +197,7 @@ function GameScreen.new()
   end
 
   local function draw_entities()
-    for collection in pairs(entities) do
+    for _, collection in ipairs(entity_order) do
       draw_collection(collection)
     end
     player:draw()
@@ -203,7 +214,7 @@ function GameScreen.new()
     map = Tilemapper(
               "assets/minitroid.ldtk", {
           aseprite = true,
-          collisions = { [1] = true, [3] = true, [4] = true },
+          collisions = { [1] = true, [3] = true, [4] = true, [5] = true },
         })
     world = bump.newWorld()
     map:loadLevel("Level_0", world)

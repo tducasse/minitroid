@@ -14,8 +14,7 @@ function Layer:new(tiles, name)
 end
 
 local TileLayer = Layer:extend()
-function TileLayer:new(tiles, name, tileset, size, spacing, padding, fields)
-  local offset = (fields and fields.tile_offset) or 0
+function TileLayer:new(tiles, name, tileset, size, spacing, padding)
   TileLayer.super.new(self, tiles, name)
   self.type = "tile"
   self.tileset = love.graphics.newImage(tileset)
@@ -30,8 +29,8 @@ function TileLayer:new(tiles, name, tileset, size, spacing, padding, fields)
   local quads = {}
   for k, info in pairs(quadInfo) do
     quads[k] = love.graphics.newQuad(
-                   info[1], info[2] + offset, size, size,
-                   self.tileset:getWidth(), self.tileset:getHeight())
+                   info[1], info[2], size, size, self.tileset:getWidth(),
+                   self.tileset:getHeight())
   end
   self.quads = quads
 end
@@ -44,8 +43,7 @@ function IntGrid:new(tiles, name, size)
 end
 
 local AutoLayer = Layer:extend()
-function AutoLayer:new(tiles, name, tileset, size, spacing, padding, fields)
-  local offset = (fields and fields.tile_offset) or 0
+function AutoLayer:new(tiles, name, tileset, size, spacing, padding)
   AutoLayer.super.new(self, tiles, name)
   self.type = "auto"
   self.tileset = love.graphics.newImage(tileset)
@@ -60,8 +58,8 @@ function AutoLayer:new(tiles, name, tileset, size, spacing, padding, fields)
   local quads = {}
   for k, info in pairs(quadInfo) do
     quads[k] = love.graphics.newQuad(
-                   info[1], info[2] + offset, size, size,
-                   self.tileset:getWidth(), self.tileset:getHeight())
+                   info[1], info[2], size, size, self.tileset:getWidth(),
+                   self.tileset:getHeight())
   end
   self.quads = quads
 end
@@ -91,7 +89,7 @@ local function getIntGrid(layer, _, options)
   return IntGrid(tiles, layer.__identifier, size)
 end
 
-local function getAutoLayer(layer, root, options, tilesets, fields)
+local function getAutoLayer(layer, root, options, tilesets)
   local tilesetPath = root .. layer.__tilesetRelPath
   local tileset = tilesets[layer.__tilesetDefUid]
   if options and options.aseprite then
@@ -99,10 +97,10 @@ local function getAutoLayer(layer, root, options, tilesets, fields)
   end
   return AutoLayer(
              layer.autoLayerTiles, layer.__identifier, tilesetPath,
-             layer.__gridSize, tileset.spacing, tileset.padding, fields)
+             layer.__gridSize, tileset.spacing, tileset.padding)
 end
 
-local function getTileLayer(layer, root, options, tilesets, fields)
+local function getTileLayer(layer, root, options, tilesets)
   local tilesetPath = root .. layer.__tilesetRelPath
   local tileset = tilesets[layer.__tilesetDefUid]
   if options and options.aseprite then
@@ -110,7 +108,7 @@ local function getTileLayer(layer, root, options, tilesets, fields)
   end
   return TileLayer(
              layer.gridTiles, layer.__identifier, tilesetPath, layer.__gridSize,
-             tileset.spacing, tileset.padding, fields)
+             tileset.spacing, tileset.padding)
 end
 
 local function getEntities(layer)
@@ -147,22 +145,22 @@ local layerTypes = {
   Tiles = getTileLayer,
 }
 
-local function getLayer(_layer, root, options, tilesets, fields)
+local function getLayer(_layer, root, options, tilesets)
   local layer = {}
   local getLayerByType = layerTypes[_layer.__type]
   if getLayerByType then
-    layer = getLayerByType(_layer, root, options, tilesets, fields)
+    layer = getLayerByType(_layer, root, options, tilesets)
   else
     layer.name = _layer.__identifier
   end
   return layer
 end
 
-local function getLayers(_layers, root, options, tilesets, fields)
+local function getLayers(_layers, root, options, tilesets)
   local layers = {}
   for i = 1, #_layers do
     local _layer = _layers[i]
-    local layer = getLayer(_layer, root, options, tilesets, fields)
+    local layer = getLayer(_layer, root, options, tilesets)
     layers[layer.name] = layer
   end
   return layers
@@ -179,14 +177,9 @@ local function getNeighbours(level, levelsByUid)
 end
 
 local function getLevel(_level, root, options, tilesets, levelsByUid)
-  local fields = {}
+  local level = getLayers(_level.layerInstances, root, options, tilesets)
   for _, field in ipairs(_level.fieldInstances or {}) do
-    fields[field.__identifier] = field.__value
-  end
-  local level = getLayers(
-                    _level.layerInstances, root, options, tilesets, fields)
-  for k, v in pairs(fields) do
-    level[k] = v
+    level[field.__identifier] = field.__value
   end
   level.name = _level.identifier
   level.width = _level.pxWid
