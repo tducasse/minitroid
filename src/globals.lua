@@ -6,7 +6,12 @@ SIGNALS = {
   HIT = "hit",
 }
 
-MUSIC = { DEFAULT = "assets/music.ogg", SECRET = "assets/secret.ogg" }
+MUSIC = {
+  DEFAULT = "assets/music.ogg",
+  SECRET = "assets/secret.ogg",
+  BOSS = "assets/boss.ogg",
+  MENU = "assets/menu.ogg",
+}
 
 RES_X = 64
 RES_Y = 64

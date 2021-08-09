@@ -13,7 +13,7 @@ function MenuScreen.new()
 
   function self:init()
     menu = love.graphics.newImage("assets/menu.png")
-    music = love.audio.play("assets/menu.ogg", "static", true)
+    music = love.audio.play(MUSIC.MENU, "static", true)
   end
 
   function self:update()

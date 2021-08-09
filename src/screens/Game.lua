@@ -15,6 +15,11 @@ function GameScreen.new()
   local Crawler = require("src.entities.crawler")
   local Bullet = require("src.entities.bullet")
   local Item = require("src.entities.item")
+  local Acid = require("src.entities.acid")
+  local AcidPole = require("src.entities.acid-pole")
+  local Mother = require("src.entities.mother")
+  local RedFluid = require("src.entities.red-fluid")
+  local Turret = require("src.entities.turret")
 
   -- CAMERA
   local camera = Camera(RES_X / 2, RES_Y / 2, RES_X, RES_Y)
@@ -27,7 +32,16 @@ function GameScreen.new()
   local paused = false
   local music = {}
   local current_music = nil
-  local entities = { bullets = {}, crawlers = {}, items = {} }
+  local entities = {
+    bullets = {},
+    crawlers = {},
+    items = {},
+    acid = {},
+    acid_pole = {},
+    mother = {},
+    fluid = {},
+    turrets = {},
+  }
 
   local function add_crawlers()
     local grid_size = map.active.Entities.grid_size
@@ -35,6 +49,46 @@ function GameScreen.new()
       local crawler = Crawler(c, grid_size, "crawlers")
       entities.crawlers[#entities.crawlers + 1] = crawler
       world:add(crawler, crawler.x, crawler.y, crawler.w, crawler.h)
+    end
+  end
+
+  local function add_acid()
+    for _, a in ipairs(map.active.Entities.Acid or {}) do
+      local acid = Acid(a, "acid")
+      entities.acid[#entities.acid + 1] = acid
+      world:add(acid, acid.x, acid.y, acid.w, acid.h)
+    end
+  end
+
+  local function add_turrets()
+    for _, t in ipairs(map.active.Entities.Turret or {}) do
+      local turret = Turret(t, "turrets")
+      entities.turrets[#entities.turrets + 1] = turret
+      world:add(turret, turret.x, turret.y, turret.w, turret.h)
+    end
+  end
+
+  local function add_red_fluid()
+    for _, f in ipairs(map.active.Entities.RedFluid or {}) do
+      local fluid = RedFluid(f, "acid")
+      entities.fluid[#entities.fluid + 1] = fluid
+      world:add(fluid, fluid.x, fluid.y, fluid.w, fluid.h)
+    end
+  end
+
+  local function add_acid_pole()
+    for _, a in ipairs(map.active.Entities.AcidPole or {}) do
+      local acid_pole = AcidPole(a, "acid_pole")
+      entities.acid_pole[#entities.acid_pole + 1] = acid_pole
+      world:add(acid_pole, acid_pole.x, acid_pole.y, acid_pole.w, acid_pole.h)
+    end
+  end
+
+  local function add_mother()
+    for _, m in ipairs(map.active.Entities.Mother or {}) do
+      local mother = Mother(m, "mother")
+      entities.mother[#entities.mother + 1] = mother
+      world:add(mother, mother.x, mother.y, mother.w, mother.h)
     end
   end
 
@@ -55,10 +109,10 @@ function GameScreen.new()
 
   local function play_level_music()
     local song = MUSIC.DEFAULT
-    if current_music == MUSIC.DEFAULT then
-      if map.active.secret then
-        song = MUSIC.SECRET
-      end
+    if map.active.secret then
+      song = MUSIC.SECRET
+    elseif map.active.boss then
+      song = MUSIC.BOSS
     end
     if current_music ~= song then
       love.audio.stop(music)
@@ -70,6 +124,11 @@ function GameScreen.new()
   local function init_level()
     add_player()
     add_crawlers()
+    add_red_fluid()
+    add_acid()
+    add_turrets()
+    add_acid_pole()
+    add_mother()
     add_items()
     play_level_music()
   end
@@ -94,6 +153,11 @@ function GameScreen.new()
   local function on_level_loaded()
     player:onLevelLoaded()
     add_crawlers()
+    add_acid()
+    add_red_fluid()
+    add_turrets()
+    add_acid_pole()
+    add_mother()
     add_items()
     play_level_music()
   end
@@ -137,8 +201,10 @@ function GameScreen.new()
 
     -- MAP
     map = Tilemapper(
-              "assets/minitroid.ldtk",
-              { aseprite = true, collisions = { [1] = true, [3] = true } })
+              "assets/minitroid.ldtk", {
+          aseprite = true,
+          collisions = { [1] = true, [3] = true, [4] = true },
+        })
     world = bump.newWorld()
     map:loadLevel("Level_0", world)
     camera:setBounds(0, 0, map.active.width, map.active.height)
@@ -160,6 +226,10 @@ function GameScreen.new()
         end)
     Signal.register(
         SIGNALS.LEVEL_LOADED, function()
+          camera:setBounds(
+              0, 0, map.active.width,
+              map.active.max_height and map.active.max_height > 0 and
+                  map.active.max_height or map.active.height)
           camera:fade(
               0.1, { 0, 0, 0, 0 }, function()
                 paused = false
