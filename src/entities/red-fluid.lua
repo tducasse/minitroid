@@ -9,12 +9,8 @@ function Fluid:update(dt)
   self.sprite:update(dt)
 end
 
-function Fluid:filter(other)
-  return nil
-end
-
 function Fluid:new(m, collection)
-  self.type = "Fluid"
+  self.type = "fluid"
   self.collection = collection
 
   -- POSITION

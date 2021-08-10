@@ -9,12 +9,8 @@ function AcidPole:update(dt)
   self.sprite:update(dt)
 end
 
-function AcidPole:filter(other)
-  return nil
-end
-
 function AcidPole:new(a, collection)
-  self.type = "AcidPole"
+  self.type = "acid_pole"
   self.collection = collection
 
   -- POSITION

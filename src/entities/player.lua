@@ -81,6 +81,20 @@ end
 function Player:update(dt, world)
   self.sprite:update(dt)
 
+  if self.dead then
+    return false
+  end
+
+  if self.hp < 0 then
+    self:die()
+  end
+
+  if self.next_tag == "Death" then
+    self.dead = true
+    self.sprite:setTag(self.next_tag)
+    return false
+  end
+
   if not self.world and world then
     self.world = world
   end
@@ -250,6 +264,8 @@ function Player:onLoop()
     self:start_rolling()
   elseif self.sprite.tagName == "Stand" then
     self:stop_rolling()
+  elseif self.sprite.tagName == "Death" then
+    self.sprite:setTag("Dead")
   end
 end
 
@@ -273,6 +289,8 @@ function Player:cross(other)
       other:destroy()
       self.roll = true
     end
+  elseif other.type == "acid" or other.type == "acid_pole" then
+    self:die()
   end
 end
 
@@ -280,9 +298,11 @@ function Player:hit(hit)
   love.audio.play("assets/hurt.ogg", "static", nil, 0.7)
   self.hp = self.hp - hit
   Signal.emit(SIGNALS.HIT)
-  if self.hp < 0 then
-    print("dead")
-  end
+end
+
+function Player:die()
+  self.next_tag = "Death"
+  Signal.emit(SIGNALS.LOSE)
 end
 
 function Player:filter(other)
@@ -295,8 +315,11 @@ function Player:filter(other)
       end
     elseif other.type == "bullet" then
       return nil
-    elseif other.type == "item" then
+    elseif other.type == "item" or other.type == "acid" or other.type ==
+        "acid_pole" then
       return "cross"
+    else
+      return "slide"
     end
   else
     return "slide"
@@ -310,7 +333,7 @@ end
 
 function Player:display_hp()
   for i = 1, self.hp do
-    love.graphics.draw(self.heart, (i - 1) * self.heart:getWidth() + i, 59)
+    love.graphics.draw(self.heart, (i - 1) * self.heart:getWidth() + i, 58)
   end
 end
 

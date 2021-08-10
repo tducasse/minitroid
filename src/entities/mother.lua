@@ -9,12 +9,8 @@ function Mother:update(dt)
   self.sprite:update(dt)
 end
 
-function Mother:filter(other)
-  return nil
-end
-
 function Mother:new(m, collection)
-  self.type = "Mother"
+  self.type = "mother"
   self.collection = collection
 
   -- POSITION

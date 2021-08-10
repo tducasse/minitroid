@@ -9,12 +9,8 @@ function Acid:update(dt)
   self.sprite:update(dt)
 end
 
-function Acid:filter(other)
-  return nil
-end
-
 function Acid:new(a, collection)
-  self.type = "Acid"
+  self.type = "acid"
   self.collection = collection
 
   -- POSITION

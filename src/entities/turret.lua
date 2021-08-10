@@ -11,12 +11,8 @@ function Turret:update(dt)
   self.sprite:update(dt)
 end
 
-function Turret:filter(other)
-  return nil
-end
-
 function Turret:new(a, collection)
-  self.type = "Turret"
+  self.type = "turret"
   self.collection = collection
 
   -- POSITION

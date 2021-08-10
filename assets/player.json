@@ -446,6 +446,7 @@
    { "name": "Jump aim up", "from": 29, "to": 29, "direction": "forward", "color": "#000000ff" },
    { "name": "Samus", "from": 30, "to": 30, "direction": "forward", "color": "#000000ff" },
    { "name": "Death", "from": 31, "to": 43, "direction": "forward", "color": "#000000ff" },
+   { "name": "Dead", "from": 43, "to": 43, "direction": "forward", "color": "#000000ff" },
    { "name": "Stand", "from": 44, "to": 46, "direction": "forward", "color": "#000000ff" }
   ],
   "layers": [

@@ -4,6 +4,7 @@ SIGNALS = {
   SHOOT = "shoot_bullet",
   DESTROY_ITEM = "destroy_item",
   HIT = "hit",
+  LOSE = "lose",
 }
 
 MUSIC = {

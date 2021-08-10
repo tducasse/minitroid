@@ -54,6 +54,12 @@ function GameScreen.new()
     "bullets",
   }
 
+  local function remove(item)
+    if world:hasItem(item) then
+      world:remove(item)
+    end
+  end
+
   local function add_crawlers()
     local grid_size = map.active.Entities.grid_size
     for _, c in ipairs(map.active.Entities.Crawlers or {}) do
@@ -133,6 +139,7 @@ function GameScreen.new()
   end
 
   local function init_level()
+    Signal.clearPattern(".*")
     add_player()
     add_crawlers()
     add_red_fluid()
@@ -146,7 +153,7 @@ function GameScreen.new()
 
   local function remove_collection(collection)
     for _, el in ipairs(entities[collection]) do
-      world:remove(el)
+      remove(el)
     end
     entities[collection] = {}
   end
@@ -257,7 +264,7 @@ function GameScreen.new()
         end)
     Signal.register(
         SIGNALS.DESTROY_ITEM, function(item, item_table_name)
-          world:remove(item)
+          remove(item)
           local item_table = entities[item_table_name]
           local found = nil
           for i, el in ipairs(item_table) do
@@ -275,6 +282,15 @@ function GameScreen.new()
         SIGNALS.HIT, function()
           camera:flash(0.05, { 24 / 255, 20 / 255, 37 / 255, 255 / 255, 1 })
           camera:shake(1, 0.1, 60)
+        end)
+
+    Signal.register(
+        SIGNALS.LOSE, function()
+          camera:fade(
+              1.4, { 0, 0, 0, 1 }, function()
+                love.audio.stop(music)
+                ScreenManager.switch("menu")
+              end)
         end)
   end
 
