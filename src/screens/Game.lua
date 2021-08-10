@@ -327,7 +327,7 @@ function GameScreen.new()
         if not (cameraTweenPos.x == player.x and cameraTweenPos.y == player.y) then
           local playerPos = { x = player.x, y = player.y }
           camera:shake(4, 1, 60)
-          cameraTween = tween.new(5, cameraTweenPos, playerPos, "inCubic")
+          cameraTween = tween.new(5, cameraTweenPos, playerPos, "inQuint")
         else
           cameraTween = {}
           cameraTweenPos = {}
