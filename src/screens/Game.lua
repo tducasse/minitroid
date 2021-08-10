@@ -10,6 +10,7 @@ function GameScreen.new()
   local Camera = require("lib.camera")
   local bump = require("lib.bump")
   local push = require("lib.push")
+  local tween = require("lib.tween")
 
   local Player = require("src.entities.player")
   local Crawler = require("src.entities.crawler")
@@ -53,6 +54,9 @@ function GameScreen.new()
     "items",
     "bullets",
   }
+
+  local cameraTween = {}
+  local cameraTweenPos = {}
 
   local function remove(item)
     if world:hasItem(item) then
@@ -178,6 +182,16 @@ function GameScreen.new()
     add_mother()
     add_items()
     play_level_music()
+    if map.active.boss then
+      local mother = entities.mother[1]
+      local motherPos = { x = mother.x + mother.w / 2, y = player.y }
+      local playerPos = { x = player.x, y = player.y }
+      cameraTweenPos = playerPos
+      cameraTween = tween.new(6, cameraTweenPos, motherPos, "linear")
+    else
+      cameraTween = {}
+      cameraTweenPos = {}
+    end
   end
 
   local function update_collection(collection, dt)
@@ -192,7 +206,9 @@ function GameScreen.new()
     for collection in pairs(entities) do
       update_collection(collection, dt)
     end
-    player:update(dt, world)
+    if not cameraTween.update then
+      player:update(dt, world)
+    end
   end
 
   local function draw_collection(collection)
@@ -280,8 +296,8 @@ function GameScreen.new()
 
     Signal.register(
         SIGNALS.HIT, function()
-          camera:flash(0.05, { 24 / 255, 20 / 255, 37 / 255, 255 / 255, 1 })
-          camera:shake(1, 0.1, 60)
+          camera:flash(0.1, { 1, 1, 1, 1 })
+          camera:shake(2, 0.2, 60)
         end)
 
     Signal.register(
@@ -300,7 +316,27 @@ function GameScreen.new()
     if not paused then
       update_entities(dt)
     end
-    camera:follow(player.x, player.y)
+
+    if map.active.boss and cameraTween.update then
+      local complete = cameraTween:update(dt)
+      if not complete then
+        if cameraTweenPos.x then
+          camera:follow(cameraTweenPos.x, cameraTweenPos.y)
+        end
+      else
+        if not (cameraTweenPos.x == player.x and cameraTweenPos.y == player.y) then
+          local playerPos = { x = player.x, y = player.y }
+          camera:shake(4, 1, 60)
+          cameraTween = tween.new(5, cameraTweenPos, playerPos, "inCubic")
+        else
+          cameraTween = {}
+          cameraTweenPos = {}
+        end
+      end
+    else
+      camera:follow(player.x, player.y)
+    end
+
     camera:update(dt)
   end
 
