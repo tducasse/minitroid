@@ -363,8 +363,8 @@ function Player:new(p, map_width, map_height)
   self.friction = 5
   self.ground = false
   self.ceiling = false
-  self.jump_height = -95
-  self.gravity = 150
+  self.jump_height = -93
+  self.gravity = 180
   self.jumping = false
   self.y_velocity = 0
   self.x_velocity = 0

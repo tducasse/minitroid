@@ -39,7 +39,7 @@ function GameScreen.new()
     acid = {},
     acid_pole = {},
     mother = {},
-    fluid = {},
+    fluids = {},
     turrets = {},
   }
 
@@ -47,7 +47,7 @@ function GameScreen.new()
     "acid",
     "acid_pole",
     "mother",
-    "fluid",
+    "fluids",
     "turrets",
     "crawlers",
     "items",
@@ -87,8 +87,8 @@ function GameScreen.new()
 
   local function add_red_fluid()
     for _, f in ipairs(map.active.Entities.RedFluid or {}) do
-      local fluid = RedFluid(f, "acid")
-      entities.fluid[#entities.fluid + 1] = fluid
+      local fluid = RedFluid(f, "fluids")
+      entities.fluids[#entities.fluids + 1] = fluid
       world:add(fluid, fluid.x, fluid.y, fluid.w, fluid.h)
     end
   end

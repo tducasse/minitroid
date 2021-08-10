@@ -9,6 +9,21 @@ function Fluid:update(dt)
   self.sprite:update(dt)
 end
 
+function Fluid:hit()
+  self.hp = self.hp - 1
+  if self.hp > 0 then
+    local index = math.ceil(self.hp / 2)
+    local anim = self.anims[index]
+    self.sprite:setTag(anim)
+  else
+    self:destroy()
+  end
+end
+
+function Fluid:destroy()
+  Signal.emit(SIGNALS.DESTROY_ITEM, self, self.collection)
+end
+
 function Fluid:new(m, collection)
   self.type = "fluid"
   self.collection = collection
@@ -18,6 +33,9 @@ function Fluid:new(m, collection)
   self.y = m.y
   self.w = m.w
   self.h = m.h
+
+  self.hp = 6
+  self.anims = { "Third", "Two thirds", "Full" }
 
   -- DRAWING
   self.sprite = peachy.new(
