@@ -152,14 +152,12 @@ function GameScreen.new()
     if map.active.secret then
       song = MUSIC.SECRET
     elseif map.active.boss then
-      song = nil
+      song = MUSIC.SECRET
     end
     if current_music ~= song then
       love.audio.stop(Music)
-      if song then
-        Music = love.audio.play(song, "static", true)
-        current_music = song
-      end
+      Music = love.audio.play(song, "static", true)
+      current_music = song
     end
   end
 
@@ -358,6 +356,7 @@ function GameScreen.new()
         end
       else
         if not (cameraTweenPos.x == player.x and cameraTweenPos.y == player.y) then
+          love.audio.stop(Music)
           Music = love.audio.play(MUSIC.BOSS, "static", true)
           current_music = MUSIC.BOSS
           local playerPos = { x = player.x, y = player.y }
