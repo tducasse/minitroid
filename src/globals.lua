@@ -5,6 +5,8 @@ SIGNALS = {
   DESTROY_ITEM = "destroy_item",
   HIT = "hit",
   LOSE = "lose",
+  MOTHER_DEATH = "mother_death",
+  WIN = "win",
 }
 
 MUSIC = {
@@ -12,6 +14,7 @@ MUSIC = {
   SECRET = "assets/secret.ogg",
   BOSS = "assets/boss.ogg",
   MENU = "assets/menu.ogg",
+  WIN = "assets/menu.ogg",
 }
 
 RES_X = 64

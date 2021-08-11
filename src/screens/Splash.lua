@@ -1,33 +1,36 @@
 local ScreenManager = require("lib.screen_manager")
 local Screen = require("lib.screen")
 
-local MenuScreen = {}
+local SplashScreen = {}
 
-function MenuScreen.new()
+function SplashScreen.new()
   local self = Screen.new()
 
   local push = require("lib.push")
 
-  local menu = {}
+  local image = {}
 
   function self:init()
-    menu = love.graphics.newImage("assets/menu.png")
+    image = love.graphics.newImage("assets/splash.png")
+    if not Music.isPlaying then
+      Music = love.audio.play(MUSIC.WIN, "static", true)
+    end
   end
 
   function self:update()
     Input:update()
     if Input:pressed("jump") then
-      love.audio.stop(Music)
-      ScreenManager.switch("game")
+      ScreenManager.switch("menu")
     end
   end
 
   function self:draw()
     push:start()
-    love.graphics.draw(menu)
+    love.graphics.draw(image)
     push:finish()
   end
 
   return self
 end
-return MenuScreen
+return SplashScreen
+

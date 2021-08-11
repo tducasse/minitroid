@@ -10,6 +10,7 @@ Inspect = function(a, options)
 end
 Class = require("lib.classic")
 Signal = require("lib.signal")
+Music = {}
 
 function love.load()
   -- INPUT
@@ -42,8 +43,10 @@ function love.load()
   local screens = {
     game = require("src.screens.Game"),
     menu = require("src.screens.Menu"),
+    win = require("src.screens.Win"),
+    splash = require("src.screens.Splash"),
   }
-  ScreenManager.init(screens, "menu")
+  ScreenManager.init(screens, "splash")
   ScreenManager.registerCallbacks()
 end
 

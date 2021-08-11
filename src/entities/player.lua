@@ -103,7 +103,7 @@ function Player:update(dt, world)
   local x_axis = Input:get("move")
 
   local still_shooting = self.shooting and
-                             (love.timer.getTime() - self.shooting < 0.2)
+                             (love.timer.getTime() - self.shooting < 0.4)
   if not still_shooting and self.shooting then
     self.shooting = false
   end
@@ -123,7 +123,7 @@ function Player:update(dt, world)
   end
 
   if self.ground then
-    if Input:pressed("down") and self.roll then
+    if Input:pressed("down") and self.ball then
       self:start_morphing()
     end
   end
@@ -195,7 +195,7 @@ function Player:update(dt, world)
         self.shooting = love.timer.getTime()
         Signal.emit(
             SIGNALS.SHOOT, self.x + (self.last_dir > 0 and self.w or 0),
-            self.y + self.gun_height, self.last_dir, 0)
+            self.y + self.gun_height, self.last_dir, 0, self.missile)
       end
     end
   end
@@ -287,10 +287,15 @@ function Player:cross(other)
     love.audio.play("assets/pickup.ogg", "static", nil, 0.7)
     if other.item == "ball" then
       other:destroy()
-      self.roll = true
+      self.ball = true
+    elseif other.item == "missile_item" then
+      other:destroy()
+      self.missile = true
     end
   elseif other.type == "acid" or other.type == "acid_pole" then
     self:die()
+  elseif other.type == "win" then
+    Signal.emit(SIGNALS.WIN)
   end
 end
 
@@ -316,7 +321,7 @@ function Player:filter(other)
     elseif other.type == "bullet" then
       return nil
     elseif other.type == "item" or other.type == "acid" or other.type ==
-        "acid_pole" then
+        "acid_pole" or other.type == "win" then
       return "cross"
     else
       return "slide"
@@ -356,7 +361,11 @@ function Player:new(p, map_width, map_height)
 
   -- SHOOTING
   self.shooting = false
-  self.gun_height = self.h - 5
+  self.gun_height = self.h - 6
+
+  -- ITEMS
+  self.missile = false
+  self.ball = false
 
   -- PHYSICS
   self.speed = 50

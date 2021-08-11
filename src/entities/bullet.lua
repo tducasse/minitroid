@@ -50,13 +50,21 @@ function Bullet:filter(other)
   end
 end
 
-function Bullet:new(x, y, dx, dy, world, map_width, map_height, collection)
+function Bullet:new(x,
+                    y,
+                    dx,
+                    dy,
+                    world,
+                    map_width,
+                    map_height,
+                    missile,
+                    collection)
   self.type = "bullet"
   self.collection = collection
 
   -- POSITION
   self.x = x
-  self.y = y
+  self.y = missile and y - 1 or y
   self.dx = dx
   self.dy = dy
   self.speed = 200
@@ -67,8 +75,11 @@ function Bullet:new(x, y, dx, dy, world, map_width, map_height, collection)
 
   -- DRAWING
   self.sprite = peachy.new(
-                    "assets/bullet.json",
-                    love.graphics.newImage("assets/bullet.png"), "default")
+                    missile and "assets/missile.json" or "assets/bullet.json",
+                    love.graphics
+                        .newImage(
+                        missile and "assets/missile.png" or "assets/bullet.png"),
+                    "default")
   self.sprite:play()
 
   world:add(

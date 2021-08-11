@@ -21,6 +21,7 @@ function GameScreen.new()
   local Mother = require("src.entities.mother")
   local RedFluid = require("src.entities.red-fluid")
   local Turret = require("src.entities.turret")
+  local Win = require("src.entities.win")
 
   -- CAMERA
   local camera = Camera(RES_X / 2, RES_Y / 2, RES_X, RES_Y)
@@ -31,7 +32,6 @@ function GameScreen.new()
   local world = {}
   local map = {}
   local paused = false
-  local music = {}
   local current_music = nil
   local entities = {
     bullets = {},
@@ -42,6 +42,7 @@ function GameScreen.new()
     mother = {},
     fluids = {},
     turrets = {},
+    win = {},
   }
 
   local entity_order = {
@@ -53,6 +54,7 @@ function GameScreen.new()
     "crawlers",
     "items",
     "bullets",
+    "win",
   }
 
   local cameraTween = {}
@@ -113,8 +115,17 @@ function GameScreen.new()
     end
   end
 
-  local function add_items()
+  local function add_items(player)
     for _, i in ipairs(map.active.Entities.Items or {}) do
+      if player then
+        local item_type = string.lower(i.type)
+        if item_type == "missile_item" and player.missile then
+          return
+        end
+        if item_type == "ball" and player.ball then
+          return
+        end
+      end
       local item = Item(i, "items")
       entities.items[#entities.items + 1] = item
       world:add(item, item.x, item.y, item.w, item.h)
@@ -128,17 +139,27 @@ function GameScreen.new()
     world:add(player, player.x, player.y, player.w, player.h)
   end
 
+  local function add_win()
+    for _, i in ipairs(map.active.Entities.Win or {}) do
+      local item = Win(i, "win")
+      entities.win[#entities.win + 1] = item
+      world:add(item, item.x, item.y, item.w, item.h)
+    end
+  end
+
   local function play_level_music()
     local song = MUSIC.DEFAULT
     if map.active.secret then
       song = MUSIC.SECRET
     elseif map.active.boss then
-      song = MUSIC.BOSS
+      song = nil
     end
     if current_music ~= song then
-      love.audio.stop(music)
-      music = love.audio.play(song, "static", true)
-      current_music = song
+      love.audio.stop(Music)
+      if song then
+        Music = love.audio.play(song, "static", true)
+        current_music = song
+      end
     end
   end
 
@@ -152,6 +173,7 @@ function GameScreen.new()
     add_acid_pole()
     add_mother()
     add_items()
+    add_win()
     play_level_music()
   end
 
@@ -180,7 +202,8 @@ function GameScreen.new()
     add_turrets()
     add_acid_pole()
     add_mother()
-    add_items()
+    add_items(player)
+    add_win()
     play_level_music()
     if map.active.boss then
       local mother = entities.mother[1]
@@ -223,7 +246,9 @@ function GameScreen.new()
     for _, collection in ipairs(entity_order) do
       draw_collection(collection)
     end
-    player:draw()
+    if not cameraTween.update then
+      player:draw()
+    end
   end
 
   -- GAME
@@ -271,12 +296,12 @@ function GameScreen.new()
               end)
         end)
     Signal.register(
-        SIGNALS.SHOOT, function(x, y, dx, dy)
+        SIGNALS.SHOOT, function(x, y, dx, dy, missile)
           entities.bullets[#entities.bullets + 1] = Bullet(
                                                         x, y, dx, dy, world,
                                                         map.active.width,
                                                         map.active.height,
-                                                        "bullets")
+                                                        missile, "bullets")
         end)
     Signal.register(
         SIGNALS.DESTROY_ITEM, function(item, item_table_name)
@@ -304,9 +329,17 @@ function GameScreen.new()
         SIGNALS.LOSE, function()
           camera:fade(
               1.4, { 0, 0, 0, 1 }, function()
-                love.audio.stop(music)
-                ScreenManager.switch("menu")
+                love.audio.stop(Music)
+                ScreenManager.switch("splash")
               end)
+        end)
+    Signal.register(
+        SIGNALS.MOTHER_DEATH, function()
+          camera:shake(4, 1, 60)
+        end)
+    Signal.register(
+        SIGNALS.WIN, function()
+          ScreenManager.switch("win")
         end)
   end
 
@@ -325,8 +358,9 @@ function GameScreen.new()
         end
       else
         if not (cameraTweenPos.x == player.x and cameraTweenPos.y == player.y) then
+          Music = love.audio.play(MUSIC.BOSS, "static", true)
+          current_music = MUSIC.BOSS
           local playerPos = { x = player.x, y = player.y }
-          camera:shake(4, 1, 60)
           cameraTween = tween.new(5, cameraTweenPos, playerPos, "inQuint")
         else
           cameraTween = {}

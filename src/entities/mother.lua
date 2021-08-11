@@ -22,6 +22,7 @@ end
 
 function Mother:destroy()
   Signal.emit(SIGNALS.DESTROY_ITEM, self, self.collection)
+  Signal.emit(SIGNALS.MOTHER_DEATH)
 end
 
 function Mother:onLoop()
