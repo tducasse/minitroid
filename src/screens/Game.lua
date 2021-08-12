@@ -22,10 +22,12 @@ function GameScreen.new()
   local RedFluid = require("src.entities.red-fluid")
   local Turret = require("src.entities.turret")
   local Win = require("src.entities.win")
+  local TurretBullet = require("src.entities.turret_bullet")
 
   -- CAMERA
   local camera = Camera(RES_X / 2, RES_Y / 2, RES_X, RES_Y)
   camera:setFollowStyle("PLATFORMER")
+  Cinema = false
 
   -- VARS
   local player = {}
@@ -43,6 +45,7 @@ function GameScreen.new()
     fluids = {},
     turrets = {},
     win = {},
+    turret_bullets = {},
   }
 
   local entity_order = {
@@ -55,10 +58,13 @@ function GameScreen.new()
     "items",
     "bullets",
     "win",
+    "turret_bullets",
   }
 
   local cameraTween = {}
   local cameraTweenPos = {}
+
+  local bossPlayerPos = {}
 
   local function remove(item)
     if world:hasItem(item) then
@@ -147,12 +153,16 @@ function GameScreen.new()
     end
   end
 
-  local function play_level_music()
+  local function play_level_music(reload)
     local song = MUSIC.DEFAULT
     if map.active.secret then
       song = MUSIC.SECRET
     elseif map.active.boss then
-      song = MUSIC.SECRET
+      if reload then
+        song = MUSIC.BOSS
+      else
+        song = MUSIC.SECRET
+      end
     end
     if current_music ~= song then
       love.audio.stop(Music)
@@ -192,7 +202,8 @@ function GameScreen.new()
     remove_entities()
   end
 
-  local function on_level_loaded()
+  local function on_level_loaded(reload)
+    bossPlayerPos = { x = player.x, y = player.y }
     player:onLevelLoaded()
     add_crawlers()
     add_acid()
@@ -202,16 +213,18 @@ function GameScreen.new()
     add_mother()
     add_items(player)
     add_win()
-    play_level_music()
-    if map.active.boss then
+    play_level_music(reload)
+    if map.active.boss and not reload then
       local mother = entities.mother[1]
       local motherPos = { x = mother.x + mother.w / 2, y = player.y }
       local playerPos = { x = player.x, y = player.y }
       cameraTweenPos = playerPos
       cameraTween = tween.new(6, cameraTweenPos, motherPos, "linear")
+      Cinema = true
     else
       cameraTween = {}
       cameraTweenPos = {}
+      Cinema = false
     end
   end
 
@@ -282,7 +295,7 @@ function GameScreen.new()
               end)
         end)
     Signal.register(
-        SIGNALS.LEVEL_LOADED, function()
+        SIGNALS.LEVEL_LOADED, function(reload)
           camera:setBounds(
               0, 0, map.active.width,
               map.active.max_height and map.active.max_height > 0 and
@@ -290,7 +303,7 @@ function GameScreen.new()
           camera:fade(
               0.1, { 0, 0, 0, 0 }, function()
                 paused = false
-                on_level_loaded()
+                on_level_loaded(reload)
               end)
         end)
     Signal.register(
@@ -327,8 +340,12 @@ function GameScreen.new()
         SIGNALS.LOSE, function()
           camera:fade(
               1.4, { 0, 0, 0, 1 }, function()
-                love.audio.stop(Music)
-                ScreenManager.switch("splash")
+                if map.active.boss then
+                  Signal.emit(SIGNALS.RELOAD)
+                else
+                  love.audio.stop(Music)
+                  ScreenManager.switch("splash")
+                end
               end)
         end)
     Signal.register(
@@ -338,6 +355,29 @@ function GameScreen.new()
     Signal.register(
         SIGNALS.WIN, function()
           ScreenManager.switch("win")
+        end)
+    Signal.register(
+        SIGNALS.TURRET_SHOOT, function(turret)
+          entities.turret_bullets[#entities.turret_bullets + 1] = TurretBullet(
+                                                                      turret,
+                                                                      world,
+                                                                      map.active
+                                                                          .width,
+                                                                      map.active
+                                                                          .height,
+                                                                      "turret_bullets")
+        end)
+    Signal.register(
+        SIGNALS.RELOAD, function()
+          paused = true
+          player.x, player.y = bossPlayerPos.x, bossPlayerPos.y
+          player.hp = 5
+          player.dead = false
+          player.next_tag = "Idle"
+          player:stop_rolling()
+          remove(player)
+          on_level_loading()
+          Signal.emit(SIGNALS.LEVEL_LOADED, true)
         end)
   end
 
@@ -364,6 +404,7 @@ function GameScreen.new()
         else
           cameraTween = {}
           cameraTweenPos = {}
+          Cinema = false
         end
       end
     else

@@ -7,6 +7,8 @@ SIGNALS = {
   LOSE = "lose",
   MOTHER_DEATH = "mother_death",
   WIN = "win",
+  TURRET_SHOOT = "turret_shoot",
+  RELOAD = "reload",
 }
 
 MUSIC = {

@@ -300,8 +300,9 @@ function Player:cross(other)
 end
 
 function Player:hit(hit)
+  local damage = hit or 1
   love.audio.play("assets/hurt.ogg", "static", nil, 0.7)
-  self.hp = self.hp - hit
+  self.hp = self.hp - damage
   Signal.emit(SIGNALS.HIT)
 end
 
