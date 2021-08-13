@@ -35,6 +35,9 @@ function GameScreen.new()
   local map = {}
   local paused = false
   local current_music = nil
+  local remove_mother = nil
+  local mother_dead = false
+  local mother_removed = false
   local entities = {
     bullets = {},
     crawlers = {},
@@ -257,7 +260,7 @@ function GameScreen.new()
     for _, collection in ipairs(entity_order) do
       draw_collection(collection)
     end
-    if not cameraTween.update then
+    if mother_dead or not cameraTween.update then
       player:draw()
     end
   end
@@ -349,8 +352,15 @@ function GameScreen.new()
               end)
         end)
     Signal.register(
-        SIGNALS.MOTHER_DEATH, function()
-          camera:shake(4, 1, 60)
+        SIGNALS.MOTHER_DEATH, function(callback)
+          camera:shake(3, 3, 60)
+          mother_dead = true
+          remove_mother = callback
+          Camera = true
+          local mother = entities.mother[1]
+          cameraTweenPos.x, cameraTweenPos.y = mother.x + mother.w / 2,
+                                               mother.y + mother.h / 2
+          cameraTween = tween.new(3, { 1 }, { 1 }, "linear")
         end)
     Signal.register(
         SIGNALS.WIN, function()
@@ -374,6 +384,8 @@ function GameScreen.new()
           player.hp = 5
           player.dead = false
           player.next_tag = "Idle"
+          mother_removed = false
+          mother_dead = false
           player:stop_rolling()
           remove(player)
           on_level_loading()
@@ -388,7 +400,7 @@ function GameScreen.new()
       update_entities(dt)
     end
 
-    if map.active.boss and cameraTween.update then
+    if map.active.boss and cameraTween.update and not mother_dead then
       local complete = cameraTween:update(dt)
       if not complete then
         if cameraTweenPos.x then
@@ -408,7 +420,24 @@ function GameScreen.new()
         end
       end
     else
-      camera:follow(player.x, player.y)
+      if mother_dead and cameraTween.update and map.active.boss then
+        local complete = cameraTween:update(dt)
+        if not complete then
+          camera:follow(cameraTweenPos.x, cameraTweenPos.y)
+        else
+          if not mother_removed then
+            remove_mother()
+            mother_removed = true
+            cameraTween = tween.new(2, { 1 }, { 1 }, "linear")
+          else
+            cameraTween = {}
+            cameraTweenPos = {}
+            Cinema = false
+          end
+        end
+      else
+        camera:follow(player.x, player.y)
+      end
     end
 
     camera:update(dt)

@@ -313,6 +313,9 @@ end
 
 function Player:filter(other)
   if other.type then
+    if other.type == "fluid" then
+      return nil
+    end
     if other.type == "crawler" then
       if not self.bouncing then
         return "bounce"

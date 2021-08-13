@@ -21,12 +21,16 @@ function Mother:hit()
 end
 
 function Mother:destroy()
-  Signal.emit(SIGNALS.DESTROY_ITEM, self, self.collection)
-  Signal.emit(SIGNALS.MOTHER_DEATH)
+  self.dead = true
+  self.sprite:setTag("Hurt")
+  Signal.emit(
+      SIGNALS.MOTHER_DEATH, function()
+        Signal.emit(SIGNALS.DESTROY_ITEM, self, self.collection)
+      end)
 end
 
 function Mother:onLoop()
-  if self.sprite.tagName == "Hurt" then
+  if self.sprite.tagName == "Hurt" and not self.dead then
     self.sprite:setTag("Broken")
   end
 end
