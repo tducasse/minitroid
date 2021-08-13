@@ -319,7 +319,8 @@ function Player:filter(other)
       else
         return nil
       end
-    elseif other.type == "bullet" then
+    elseif other.type == "bullet" or other.type == "turret_bullet" or other.type ==
+        "turret" then
       return nil
     elseif other.type == "item" or other.type == "acid" or other.type ==
         "acid_pole" or other.type == "win" then
