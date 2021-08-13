@@ -266,6 +266,7 @@ function Player:onLoop()
     self:stop_rolling()
   elseif self.sprite.tagName == "Death" then
     self.sprite:setTag("Dead")
+    Signal.emit(SIGNALS.LOSE)
   end
 end
 
@@ -308,7 +309,6 @@ end
 
 function Player:die()
   self.next_tag = "Death"
-  Signal.emit(SIGNALS.LOSE)
 end
 
 function Player:filter(other)

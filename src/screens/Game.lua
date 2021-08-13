@@ -339,7 +339,7 @@ function GameScreen.new()
     Signal.register(
         SIGNALS.LOSE, function()
           camera:fade(
-              1.4, { 0, 0, 0, 1 }, function()
+              0.5, { 0, 0, 0, 1 }, function()
                 if map.active.boss then
                   Signal.emit(SIGNALS.RELOAD)
                 else
