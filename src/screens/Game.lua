@@ -23,6 +23,7 @@ function GameScreen.new()
   local Turret = require("src.entities.turret")
   local Win = require("src.entities.win")
   local TurretBullet = require("src.entities.turret_bullet")
+  local Explosion = require("src.entities.explosion")
 
   -- CAMERA
   local camera = Camera(RES_X / 2, RES_Y / 2, RES_X, RES_Y)
@@ -49,6 +50,7 @@ function GameScreen.new()
     turrets = {},
     win = {},
     turret_bullets = {},
+    explosions = {},
   }
 
   local entity_order = {
@@ -62,6 +64,7 @@ function GameScreen.new()
     "bullets",
     "win",
     "turret_bullets",
+    "explosions",
   }
 
   local cameraTween = {}
@@ -390,6 +393,12 @@ function GameScreen.new()
           remove(player)
           on_level_loading()
           Signal.emit(SIGNALS.LEVEL_LOADED, true)
+        end)
+
+    Signal.register(
+        SIGNALS.EXPLODE, function(x, y)
+          local explosion = Explosion(x, y, "explosions")
+          entities.explosions[#entities.explosions + 1] = explosion
         end)
   end
 

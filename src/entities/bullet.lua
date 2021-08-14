@@ -35,6 +35,9 @@ function Bullet:update(dt, world)
 end
 
 function Bullet:destroy()
+  if self.missile then
+    Signal.emit(SIGNALS.EXPLODE, self.x, self.y)
+  end
   Signal.emit(SIGNALS.DESTROY_ITEM, self, self.collection)
 end
 
@@ -61,6 +64,7 @@ function Bullet:new(x,
                     collection)
   self.type = "bullet"
   self.collection = collection
+  self.missile = missile
 
   -- POSITION
   self.x = x

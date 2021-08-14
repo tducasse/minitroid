@@ -116,6 +116,7 @@ function Crawler:new(c, grid_size, collection)
 end
 
 function Crawler:hit()
+  love.audio.play("assets/destroy.ogg", "static", false, "0.7")
   self:destroy()
 end
 

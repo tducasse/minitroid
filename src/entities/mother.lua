@@ -26,6 +26,8 @@ function Mother:destroy()
   Signal.emit(
       SIGNALS.MOTHER_DEATH, function()
         Signal.emit(SIGNALS.DESTROY_ITEM, self, self.collection)
+        love.audio.stop(Music)
+        love.audio.play("assets/mother_death.ogg", "static", false, 0.9)
       end)
 end
 

@@ -9,6 +9,7 @@ SIGNALS = {
   WIN = "win",
   TURRET_SHOOT = "turret_shoot",
   RELOAD = "reload",
+  EXPLODE = "explode",
 }
 
 MUSIC = {
