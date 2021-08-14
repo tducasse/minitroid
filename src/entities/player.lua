@@ -274,7 +274,7 @@ function Player:bounce(other)
   if self.bouncing then
     return
   end
-  if other.type == "crawler" then
+  if other.type == "crawler" or other.type == "skree" or other.type == "metroid" then
     self:hit(1)
   end
   self.bouncing = true
@@ -313,7 +313,8 @@ end
 
 function Player:filter(other)
   if other.type then
-    if other.type == "crawler" then
+    if other.type == "crawler" or other.type == "skree" or other.type ==
+        "metroid" then
       if not self.bouncing then
         return "bounce"
       else

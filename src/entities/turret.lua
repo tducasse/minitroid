@@ -33,7 +33,7 @@ function Turret:onLoop()
   end
 
   local random = math.random()
-  if random < 0.40 then
+  if random < 0.33 then
     self:shoot()
   end
 

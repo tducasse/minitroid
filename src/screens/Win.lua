@@ -13,9 +13,8 @@ function WinScreen.new()
 
   function self:init()
     image = love.graphics.newImage("assets/win.png")
-    if not Music.isPlaying then
-      Music = love.audio.play(MUSIC.WIN, "static", true)
-    end
+    love.audio.stop(Music)
+    Music = love.audio.play(MUSIC.WIN, "static", true)
   end
 
   function self:update()

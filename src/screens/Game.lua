@@ -24,6 +24,8 @@ function GameScreen.new()
   local Win = require("src.entities.win")
   local TurretBullet = require("src.entities.turret_bullet")
   local Explosion = require("src.entities.explosion")
+  local Skree = require("src.entities.skree")
+  local Metroid = require("src.entities.metroid")
 
   -- CAMERA
   local camera = Camera(RES_X / 2, RES_Y / 2, RES_X, RES_Y)
@@ -41,7 +43,9 @@ function GameScreen.new()
   local mother_removed = false
   local entities = {
     bullets = {},
+    skrees = {},
     crawlers = {},
+    metroids = {},
     items = {},
     acid = {},
     acid_pole = {},
@@ -60,6 +64,8 @@ function GameScreen.new()
     "fluids",
     "turrets",
     "crawlers",
+    "metroids",
+    "skrees",
     "items",
     "bullets",
     "win",
@@ -87,11 +93,28 @@ function GameScreen.new()
     end
   end
 
+  local function add_metroids()
+    local grid_size = map.active.Entities.grid_size
+    for _, c in ipairs(map.active.Entities.Metroids or {}) do
+      local metroid = Metroid(c, grid_size, "metroids")
+      entities.metroids[#entities.metroids + 1] = metroid
+      world:add(metroid, metroid.x, metroid.y, metroid.w, metroid.h)
+    end
+  end
+
   local function add_acid()
     for _, a in ipairs(map.active.Entities.Acid or {}) do
       local acid = Acid(a, "acid")
       entities.acid[#entities.acid + 1] = acid
       world:add(acid, acid.x, acid.y, acid.w, acid.h)
+    end
+  end
+
+  local function add_skrees()
+    for _, a in ipairs(map.active.Entities.Skrees or {}) do
+      local skree = Skree(a, "skrees")
+      entities.skrees[#entities.skrees + 1] = skree
+      world:add(skree, skree.x, skree.y, skree.w, skree.h)
     end
   end
 
@@ -181,6 +204,8 @@ function GameScreen.new()
     Signal.clearPattern(".*")
     add_player()
     add_crawlers()
+    add_metroids()
+    add_skrees()
     add_red_fluid()
     add_acid()
     add_turrets()
@@ -211,7 +236,9 @@ function GameScreen.new()
   local function on_level_loaded(reload)
     bossPlayerPos = { x = player.x, y = player.y }
     player:onLevelLoaded()
+    add_skrees()
     add_crawlers()
+    add_metroids()
     add_acid()
     add_red_fluid()
     add_turrets()
@@ -220,6 +247,9 @@ function GameScreen.new()
     add_items(player)
     add_win()
     play_level_music(reload)
+    if map.active.boss then
+      player.hp = 5
+    end
     if map.active.boss and not reload then
       local mother = entities.mother[1]
       local motherPos = { x = mother.x + mother.w / 2, y = player.y }
@@ -237,7 +267,7 @@ function GameScreen.new()
   local function update_collection(collection, dt)
     for _, el in ipairs(entities[collection]) do
       if el.update then
-        el:update(dt, world)
+        el:update(dt, world, player)
       end
     end
   end

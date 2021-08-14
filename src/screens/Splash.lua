@@ -12,8 +12,8 @@ function SplashScreen.new()
 
   function self:init()
     image = love.graphics.newImage("assets/splash.png")
-    if not Music.isPlaying then
-      Music = love.audio.play(MUSIC.WIN, "static", true)
+    if not (Music.isPlaying and Music:isPlaying()) then
+      Music = love.audio.play(MUSIC.MENU, "static", true)
     end
   end
 

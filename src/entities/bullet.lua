@@ -21,7 +21,13 @@ function Bullet:update(dt, world)
   for _, col in pairs(cols) do
     if col.type == "touch" then
       self:destroy()
-      if col.other.hit then
+      if col.other.type == "metroid" then
+        if self.missile then
+          col.other:hit()
+          self:explode(col.other)
+        end
+      elseif col.other.hit then
+        self:explode(col.other)
         col.other:hit()
       end
     end
@@ -34,10 +40,15 @@ function Bullet:update(dt, world)
 
 end
 
-function Bullet:destroy()
+function Bullet:explode(other)
   if self.missile then
-    Signal.emit(SIGNALS.EXPLODE, self.x, self.y)
+    local x = other.x + other.w / 2
+    local y = other.y + other.h / 2
+    Signal.emit(SIGNALS.EXPLODE, x, y)
   end
+end
+
+function Bullet:destroy()
   Signal.emit(SIGNALS.DESTROY_ITEM, self, self.collection)
 end
 
